@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parth Sharma</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <link rel="stylesheet" href="./assets/css/style.css">
+  </head>
+  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10">
+    <!-- Nav -->
+    <nav class="mt-6 pb-4 border-b border-[#313244]">
+      <div>
+        <h1 class="font-serif text-4xl font-bold">Parth Sharma</h1>
+        <div class="mt-5 flex flex-wrap gap-5">
+          <a
+            href="index.html"
+            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300 font-semibold"
+            >Home</a
+          >
+          <a
+            href="./blogs/index.html"
+            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300"
+            >Blogs</a
+          >
+          <a
+            href="./projects/index.html"
+            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300"
+            >Projects</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Banner Image -->
+    <div class="mt-6 mb-8">
+      <img 
+        src="./assets/img/banner.jpg" 
+        alt="Banner" 
+        class="w-full h-auto rounded-lg border border-[#313244] opacity-90 hover:opacity-100 transition-opacity"
+        onerror="this.src='https://github.com/catppuccin/catppuccin/raw/main/assets/preview.png'"
+      />
+    </div>
+
+    <!-- Intro -->
+    <section class="space-y-6">
+      <div>
+        <h2 class="text-xl text-[#cdd6f4] mb-4">
+          Hi, I’m <span class="font-bold text-[#f9e2af]">Parth</span>.
+        </h2>
+        
+        <div class="space-y-4 text-[#cdd6f4] leading-relaxed">
+          <p>
+            I love working with agentic frameworks, their tooling, and hacking around how systems work.
+          </p>
+          
+          <p>
+            I previously worked at <strong>Mem0 (YC S24)</strong>.
+          </p>
+
+          <p>
+            Currently learning <strong>Golang</strong> and building my own agentic framework in it.
+          </p>
+        </div>
+      </div>
+
+      <!-- Socials -->
+      <div class="flex gap-4 text-sm">
+        <a href="https://twitter.com/parthshr370" class="text-[#89b4fa] hover:underline">Twitter</a>
+        <span class="text-[#585b70]">/</span>
+        <a href="https://github.com/parthshr370" class="text-[#89b4fa] hover:underline">Github</a>
+        <span class="text-[#585b70]">/</span>
+        <a href="https://linkedin.com/in/parthshr370" class="text-[#89b4fa] hover:underline">LinkedIn</a>
+        <span class="text-[#585b70]">/</span>
+        <a href="mailto:parthshr370@gmail.com" class="text-[#89b4fa] hover:underline">Email</a>
+      </div>
+
+      <!-- Previously -->
+      <div>
+        <h3 class="text-lg font-bold text-[#cba6f7] mb-2">Previously</h3>
+        <ul class="space-y-1 text-[#bac2de]">
+          <li>• <a href="https://mem0.ai/" class="hover:text-[#fab387]">Mem0 (YC S24)</a></li>
+          <li>• <a href="https://www.camel-ai.org/" class="hover:text-[#fab387]">Camel AI</a></li>
+          <li>• <a href="https://www.aci.dev/" class="hover:text-[#fab387]">AIPOLABS (aci.dev)</a></li>
+          <li>• <a href="https://www.esds.co.in/" class="hover:text-[#fab387]">ESDS</a></li>
+          <li>• IIIT Allahabad (Research on process mining)</li>
+        </ul>
+      </div>
+
+      <hr class="border-[#313244] my-8" />
+
+      <!-- Open Source -->
+      <div>
+        <h2 class="text-2xl font-bold text-[#cba6f7] mb-6">Open Source Contributions</h2>
+        
+        <div class="space-y-6">
+          <!-- Item 1 -->
+          <div>
+            <a href="https://github.com/camel-ai/camel" target="_blank" class="block group">
+              <h3 class="text-xl font-semibold text-[#89b4fa] mb-1 group-hover:underline">Camel-AI ↗</h3>
+            </a>
+            <p class="text-[#a6adc8]">
+              Core contributor focused on MCPToolkit, toolkits, and other features. Regular contributions to the main product w cookbooks, features etc.
+            </p>
+          </div>
+
+          <!-- Item 2 -->
+          <div>
+            <a href="https://github.com/mem0ai/mem0-mcp" target="_blank" class="block group">
+              <h3 class="text-xl font-semibold text-[#89b4fa] mb-1 group-hover:underline">mem0-mcp ↗</h3>
+            </a>
+            <p class="text-[#a6adc8] mb-2">
+              Revamped the complete mem0-mcp to shape it for the new api v2, allowing complex filters and other decisions expanding LLMs tool calling capacity.
+            </p>
+            <p class="text-[#a6adc8] text-sm">
+              Now compatible as a python package, docker endpoint and smithery.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="border-[#313244] my-8" />
+
+      <!-- Projects -->
+      <div>
+        <h2 class="text-2xl font-bold text-[#cba6f7] mb-4">Projects</h2>
+        <ul class="list-none space-y-4">
+           
+           <!-- Simpletex -->
+           <li>
+             <a href="https://simpletex.xyz" class="group flex items-baseline gap-2">
+               <span class="text-[#fab387] font-bold group-hover:underline">Simpletex.xyz</span>
+               <span class="text-[#585b70]">-</span>
+               <span class="text-[#bac2de]">LaTeX Resume Platform</span>
+             </a>
+           </li>
+
+           <!-- Mem0 Deep Researcher -->
+           <li>
+             <a href="https://github.com/parthshr370/Mem0-Deep-Researcher" class="group flex items-baseline gap-2">
+               <span class="text-[#fab387] font-bold group-hover:underline">Memory Deep Researcher</span>
+               <span class="text-[#585b70]">-</span>
+               <span class="text-[#bac2de]">deep research iteratively your memory db</span>
+             </a>
+           </li>
+
+           <!-- Sound Intro Time -->
+           <li>
+             <a href="https://github.com/parthshr370/Sound-Intro-Time" class="group flex items-baseline gap-2">
+               <span class="text-[#fab387] font-bold group-hover:underline">Sound Intro Time</span>
+               <span class="text-[#585b70]">-</span>
+               <span class="text-[#bac2de]">Audio Analysis in Python</span>
+             </a>
+           </li>
+
+        </ul>
+      </div>
+
+    </section>
+  </body>
+</html>

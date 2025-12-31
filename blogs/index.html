@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blogs - Parth Sharma</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+  </head>
+  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10">
+    <nav class="mt-6 pb-4 border-b border-[#313244]">
+      <div>
+        <h1 class="font-serif text-4xl font-bold">Blogs</h1>
+        <div class="mt-5 flex flex-wrap gap-5">
+          <a
+            href="../index.html"
+            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300"
+            >Home</a
+          >
+          <a
+            href="./index.html"
+            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300 font-semibold"
+            >Blogs</a
+          >
+          <a
+            href="../projects/index.html"
+            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300"
+            >Projects</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <section class="mt-8">
+      <h1 class="text-lg text-[#cdd6f4] mb-6">Exploring Multi-Agent Systems, Tooling, and System Architecture.</h1>
+      
+      <!-- Featured Blogs (Top 3) -->
+      <div class="mb-10">
+        <h2 class="text-[#cba6f7] font-bold text-xl mb-6 flex items-center gap-2">
+            <span>✨ Featured</span>
+            <span class="text-[#313244] text-sm">/</span>
+        </h2>
+        
+        <div class="space-y-6">
+            <!-- 1. Data Shapley -->
+            <div class="group">
+                <a href="https://medium.com/@parthshr370/data-shapley-in-one-training-run-a74c35dfcb4f" target="_blank" class="block">
+                    <h2 class="text-xl font-semibold text-[#89b4fa] group-hover:underline">Data Shapley in One Training Run</h2>
+                    <p class="text-sm text-[#a6adc8] mt-1">Data Attribution • LLMs</p>
+                </a>
+            </div>
+
+            <!-- 2. MCP Communication -->
+            <div class="group">
+                <a href="https://medium.com/@parthshr370/ai-without-borders-making-different-agent-frameworks-collaborate-through-mcp-7644bf5c5d9f" target="_blank" class="block">
+                    <h2 class="text-xl font-semibold text-[#89b4fa] group-hover:underline">Creating your own Agent to Agent communication with MCP</h2>
+                    <p class="text-sm text-[#a6adc8] mt-1">Agents • MCP • Protocol</p>
+                </a>
+            </div>
+
+            <!-- 3. EEG Lab -->
+            <div class="group">
+                <a href="https://medium.com/@parthshr370/your-guide-to-preprocessing-in-eeglab-5f865e538e4c" target="_blank" class="block">
+                    <h2 class="text-xl font-semibold text-[#89b4fa] group-hover:underline">Your Guide To Preprocessing EEG data in EEGLab</h2>
+                    <p class="text-sm text-[#a6adc8] mt-1">Neuroscience • Python</p>
+                </a>
+            </div>
+        </div>
+      </div>
+
+      <hr class="border-[#313244] my-8" />
+
+      <!-- Recent / Other Blogs -->
+      <div class="mb-10">
+        <details class="group">
+          <summary class="text-[#cba6f7] font-bold text-xl mb-6 cursor-pointer list-none flex items-center gap-2">
+            <span>All Posts</span>
+            <span class="transition-transform group-open:rotate-90">▶</span>
+          </summary>
+        
+          <div class="space-y-6 pl-4 border-l border-[#313244]">
+            <!-- Mem0 Architecture -->
+            <div class="group">
+                <a href="https://medium.com/@parthshr370/from-chat-history-to-ai-memory-a-better-way-to-build-intelligent-agents-f30116b0c124" target="_blank" class="block">
+                    <h2 class="text-lg font-semibold text-[#cdd6f4] group-hover:text-[#89b4fa] transition-colors">Demystifying the brilliant architecture of mem0</h2>
+                    <p class="text-sm text-[#6c7086] mt-1">Memory • Architecture • Agents</p>
+                </a>
+            </div>
+
+            <!-- Context Engineering -->
+            <div class="group">
+                <a href="https://medium.com/@parthshr370/context-engineering-building-better-ai-worlds-beyond-prompts-71e844bf78c8" target="_blank" class="block">
+                    <h2 class="text-lg font-semibold text-[#cdd6f4] group-hover:text-[#89b4fa] transition-colors">Context Engineering: Building Better AI Worlds Beyond Prompts</h2>
+                    <p class="text-sm text-[#6c7086] mt-1">Context • Prompt Engineering • AI</p>
+                </a>
+            </div>
+
+            <!-- Pairing Agents with 600+ tools -->
+            <div class="group">
+                <a href="https://medium.com/@parthshr370/pairing-your-ai-agent-with-600-mcp-servers-seamlessly-0d249008d5d6" target="_blank" class="block">
+                    <h2 class="text-lg font-semibold text-[#cdd6f4] group-hover:text-[#89b4fa] transition-colors">Pairing your AI agent with 600+ MCP tools seamlessly</h2>
+                    <p class="text-sm text-[#6c7086] mt-1">MCP • Tooling • Camel-AI</p>
+                </a>
+            </div>
+
+            <!-- Building MCP servers with CAMEL -->
+            <div class="group">
+                <a href="https://medium.com/@parthshr370/building-mcp-servers-with-camel-ai-dbb419b083ad" target="_blank" class="block">
+                    <h2 class="text-lg font-semibold text-[#cdd6f4] group-hover:text-[#89b4fa] transition-colors">Building MCP servers with CAMEL AI</h2>
+                    <p class="text-sm text-[#6c7086] mt-1">Tutorial • MCP • Python</p>
+                </a>
+            </div>
+
+            <!-- Building cool agents -->
+            <div class="group">
+                <a href="https://medium.com/@parthshr370/building-cool-agents-with-camel-ai-1053b502e582" target="_blank" class="block">
+                    <h2 class="text-lg font-semibold text-[#cdd6f4] group-hover:text-[#89b4fa] transition-colors">Building cool agents with CAMEL AI</h2>
+                    <p class="text-sm text-[#6c7086] mt-1">Agents • Frameworks</p>
+                </a>
+            </div>
+
+            <!-- Song Intro -->
+            <div class="group">
+                <a href="https://medium.com/@parthshr370/finding-the-intro-time-of-a-song-using-python-af1a735c3110" target="_blank" class="block">
+                    <h2 class="text-lg font-semibold text-[#cdd6f4] group-hover:text-[#89b4fa] transition-colors">Finding the intro time of a song using Python</h2>
+                    <p class="text-sm text-[#6c7086] mt-1">Audio Processing • Python</p>
+                </a>
+            </div>
+
+            <!-- PM4PY -->
+            <div class="group">
+                <a href="https://medium.com/@parthshr370/how-to-get-started-with-pm4py-abebfa97d899" target="_blank" class="block">
+                    <h2 class="text-lg font-semibold text-[#cdd6f4] group-hover:text-[#89b4fa] transition-colors">How to Get started with PM4PY</h2>
+                    <p class="text-sm text-[#6c7086] mt-1">Process Mining • Data Science</p>
+                </a>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <hr class="border-[#313244] my-8" />
+
+      <!-- Notes Section -->
+      <div>
+        <h2 class="text-2xl font-bold text-[#cba6f7] mb-4">Some notes I made</h2>
+        
+        <div>
+          <a href="https://github.com/parthshr370/Computer-Science-Notes" target="_blank" class="group block">
+            <h3 class="text-xl font-semibold text-[#89b4fa] mb-2 group-hover:underline">Computer Science Notes ↗</h3>
+          </a>
+          <p class="text-[#cdd6f4] mb-2">
+            A comprehensive knowledge base spanning 3 years of Computer Science and ML research. 
+            I continuously update this with new findings in Process Mining, Deep Learning, and System Design.
+          </p>
+          <p class="text-[#a6adc8] text-sm">
+            Topics: Basics (Linux/Git), OOP, Machine Learning, Deep Learning, and Process Mining.
+          </p>
+        </div>
+      </div>
+      
+    </section>
+  </body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Projects - Parth Sharma</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+  </head>
+  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10">
+    <nav class="mt-6 pb-4 border-b border-[#313244]">
+      <div>
+        <h1 class="font-serif text-4xl font-bold">Projects</h1>
+        <div class="mt-5 flex flex-wrap gap-5">
+          <a
+            href="../index.html"
+            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300"
+            >Home</a
+          >
+          <a
+            href="../blogs/index.html"
+            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300"
+            >Blogs</a
+          >
+          <a
+            href="./index.html"
+            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300 font-semibold"
+            >Projects</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <section class="mt-8 space-y-8">
+      
+      <!-- Open Source Contributions Section -->
+      <div>
+        <h2 class="text-2xl font-bold text-[#cba6f7] mb-6">Open Source Contributions</h2>
+        <div class="space-y-6">
+          <!-- Item 1 -->
+          <div>
+            <a href="https://github.com/camel-ai/camel" target="_blank" class="block group">
+              <h3 class="text-xl font-semibold text-[#89b4fa] mb-1 group-hover:underline">Camel-AI ↗</h3>
+            </a>
+            <p class="text-[#a6adc8]">
+              Core contributor focused on MCPToolkit, toolkits, and other features. Regular contributions to the main product w cookbooks, features etc.
+            </p>
+          </div>
+
+          <!-- Item 2 -->
+          <div>
+            <a href="https://github.com/mem0ai/mem0-mcp" target="_blank" class="block group">
+              <h3 class="text-xl font-semibold text-[#89b4fa] mb-1 group-hover:underline">mem0-mcp ↗</h3>
+            </a>
+            <p class="text-[#a6adc8] mb-2">
+              Revamped the complete mem0-mcp to shape it for the new api v2, allowing complex filters and other decisions expanding LLMs tool calling capacity.
+            </p>
+            <p class="text-[#a6adc8] text-sm">
+              Now compatible as a python package, docker endpoint and smithery.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="border-[#313244]" />
+
+      <!-- Projects Section -->
+      <div>
+        <h2 class="text-2xl font-bold text-[#cba6f7] mb-4">Personal Projects</h2>
+        <ul class="list-none space-y-4">
+           <li>
+             <a href="https://simpletex.xyz" class="group block">
+               <div class="flex items-baseline gap-2 mb-1">
+                 <span class="text-[#fab387] font-bold text-lg group-hover:underline">Simpletex.xyz ↗</span>
+               </div>
+               <p class="text-[#a6adc8] text-sm">
+                 A streamlined platform for creating LaTeX resumes via form-filling or upload. Integrated CAMEL-AI agents for intelligent content optimization.
+               </p>
+             </a>
+           </li>
+           
+           <li>
+             <a href="#" class="group block">
+               <div class="flex items-baseline gap-2 mb-1">
+                 <span class="text-[#fab387] font-bold text-lg group-hover:underline">Memory Deep Researcher</span>
+               </div>
+               <p class="text-[#a6adc8] text-sm">
+                 A "Deep Researcher" for memory databases. Uses competing agents to extract facts for the mem0 database and implements a ReWOO + ReAct loop.
+               </p>
+             </a>
+           </li>
+        </ul>
+      </div>
+
+    </section>
+  </body>
+</html>

@@ -1,0 +1,94 @@
+@font-face {
+    font-family: 'ZedMono';
+    src: url('../fonts/ZedMonoNerdFont-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ZedMono';
+    src: url('../fonts/ZedMonoNerdFont-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+:root {
+    /* Catppuccin Mocha Palette */
+    --ctp-rosewater: #f5e0dc;
+    --ctp-flamingo: #f2cdcd;
+    --ctp-pink: #f5c2e7;
+    --ctp-mauve: #cba6f7;
+    --ctp-red: #f38ba8;
+    --ctp-maroon: #eba0ac;
+    --ctp-peach: #fab387;
+    --ctp-yellow: #f9e2af;
+    --ctp-green: #a6e3a1;
+    --ctp-teal: #94e2d5;
+    --ctp-sky: #89dceb;
+    --ctp-sapphire: #74c7ec;
+    --ctp-blue: #89b4fa;
+    --ctp-lavender: #b4befe;
+    --ctp-text: #cdd6f4;
+    --ctp-subtext1: #bac2de;
+    --ctp-subtext0: #a6adc8;
+    --ctp-overlay2: #9399b2;
+    --ctp-overlay1: #7f849c;
+    --ctp-overlay0: #6c7086;
+    --ctp-surface2: #585b70;
+    --ctp-surface1: #45475a;
+    --ctp-surface0: #313244;
+    --ctp-base: #1e1e2e;
+    --ctp-mantle: #181825;
+    --ctp-crust: #11111b;
+}
+
+body {
+    background-color: #1e1e2e !important; /* Catppuccin Mocha Base */
+    color: var(--ctp-text) !important;
+    font-family: 'ZedMono', monospace !important;
+}
+
+/* Force Title to be Mono and Mauve */
+h1.font-serif {
+    font-family: 'ZedMono', monospace !important;
+    font-weight: bold;
+    color: var(--ctp-mauve) !important;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+    color: var(--ctp-mauve) !important;
+}
+
+/* Links */
+a {
+    color: var(--ctp-blue) !important;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--ctp-sapphire) !important;
+    text-decoration: underline;
+}
+
+/* Navigation */
+nav {
+    border-bottom: 1px solid var(--ctp-surface1) !important;
+}
+
+nav a.relative::after {
+    background-color: var(--ctp-mauve) !important;
+}
+
+hr {
+    border-color: var(--ctp-surface1) !important;
+}
+
+/* Text Highlights */
+.font-semibold {
+    color: var(--ctp-peach) !important;
+}
+
+.text-gray-600, .text-gray-700, .text-gray-900 {
+    color: var(--ctp-subtext0) !important;
+}
