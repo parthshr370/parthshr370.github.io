@@ -92,3 +92,15 @@ hr {
 .text-gray-600, .text-gray-700, .text-gray-900 {
     color: var(--ctp-subtext0) !important;
 }
+
+/* Bold - Sapphire (like Obsidian Catppuccin) */
+strong, b {
+    color: var(--ctp-sapphire) !important;
+    font-weight: 700;
+}
+
+/* Italic - Green (like Obsidian Catppuccin) */
+em, i {
+    color: var(--ctp-green) !important;
+    font-style: italic;
+}

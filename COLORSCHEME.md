@@ -48,6 +48,19 @@ Based on **Catppuccin Mocha** palette. Use this as a reference when creating new
 
 ---
 
+## Text Formatting (Bold/Italic)
+
+Inspired by Obsidian Catppuccin theme - bold and italic get their own colors.
+
+| Element | Color | Hex | CSS Variable | Usage |
+|---------|-------|-----|--------------|-------|
+| **Bold** | Sapphire | `#74c7ec` | `var(--ctp-sapphire)` | `<strong>`, `<b>` |
+| *Italic* | Green | `#a6e3a1` | `var(--ctp-green)` | `<em>`, `<i>` |
+| ***Bold+Italic*** | Teal | `#94e2d5` | `var(--ctp-teal)` | Combined formatting |
+| ~~Strikethrough~~ | Maroon | `#eba0ac` | `var(--ctp-maroon)` | `<del>`, `<s>` |
+
+---
+
 ## Accent Colors
 
 | Element | Color | Hex | CSS Variable | Usage |
@@ -55,7 +68,7 @@ Based on **Catppuccin Mocha** palette. Use this as a reference when creating new
 | Name Highlight | Yellow | `#f9e2af` | `var(--ctp-yellow)` | "I'm Parth" |
 | Project Names | Peach | `#fab387` | `var(--ctp-peach)` | Project titles |
 | Section Headers | Mauve | `#cba6f7` | `var(--ctp-mauve)` | "Open Source", "Projects" |
-| Success/Positive | Green | `#a6e3a1` | `var(--ctp-green)` | Achievements, social links |
+| Success/Positive | Green | `#a6e3a1` | `var(--ctp-green)` | Achievements |
 | Warning | Yellow | `#f9e2af` | `var(--ctp-yellow)` | Notices |
 | Error | Red | `#f38ba8` | `var(--ctp-red)` | Errors, warnings |
 
@@ -144,11 +157,15 @@ Primary Text:     text-[#cdd6f4]
 Muted Text:       text-[#a6adc8]
 Faint Text:       text-[#6c7086]
 Links:            text-[#89b4fa] hover:text-[#74c7ec]
-Social Links:     text-[#a6e3a1] hover:text-[#94e2d5]
+Social Links:     text-[#f9e2af] hover:text-[#fab387]
 Headings:         text-[#cba6f7]
 Project Names:    text-[#fab387]
 Highlights:       text-[#f9e2af]
 Borders:          border-[#313244]
 Separators:       text-[#585b70]
 Code BG:          bg-[#181825]
+
+Bold (strong):    text-[#74c7ec] (Sapphire)
+Italic (em):      text-[#a6e3a1] (Green)
+Strikethrough:    text-[#eba0ac] (Maroon)
 ```
