@@ -6,22 +6,59 @@
     <title>Pairing AI Agents with MCP</title>
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <script>
+      // Theme management
+      const theme = localStorage.getItem('theme') || 'mocha';
+      document.documentElement.setAttribute('data-theme', theme);
+
+      function updateThemeIcon(currentTheme) {
+        const moonIcon = document.getElementById('moon-icon');
+        const sunIcon = document.getElementById('sun-icon');
+        if (currentTheme === 'orange') {
+          moonIcon?.classList.add('hidden');
+          sunIcon?.classList.remove('hidden');
+        } else {
+          sunIcon?.classList.add('hidden');
+          moonIcon?.classList.remove('hidden');
+        }
+      }
+
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'mocha' ? 'orange' : 'mocha';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        updateThemeIcon(document.documentElement.getAttribute('data-theme'));
+      });
+    </script>
   </head>
-  <body class="w-full max-w-[90%] md:w-[43%] mx-auto">
-    <nav class="mt-6">
-      <a href="./index.html" class="text-sm font-semibold hover:underline">← Back to Blogs</a>
+  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10 bg-[var(--bg)] text-[var(--text)]">
+    <nav class="mt-6 flex justify-between items-center">
+      <a href="./index.html" class="text-sm font-semibold hover:underline text-[var(--primary)]">← Back to Blogs</a>
+      <button 
+        onclick="toggleTheme()" 
+        class="p-2 rounded-lg border border-[var(--border)] text-[var(--primary)] hover:bg-[var(--border)] transition-all duration-300 cursor-pointer flex items-center justify-center"
+        title="Toggle Theme"
+      >
+        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
     </nav>
     
-    <article class="mt-8 prose prose-lg">
-      <h1 class="text-3xl font-bold mb-2">Pairing your AI agent with 600+ MCP tools seamlessly</h1>
-      <p class="text-gray-600 mb-8">June 5, 2025 • 8 min read</p>
+    <article class="mt-8">
+      <h1 class="text-3xl font-bold mb-2 text-[var(--primary)]">Pairing your AI agent with 600+ MCP tools seamlessly</h1>
+      <p class="text-[var(--text-muted)] mb-8">June 5, 2025 • 8 min read</p>
 
       <p class="mb-4">
         The <strong>Model Context Protocol (MCP)</strong> is changing how agents interact with the world. 
         Traditionally, giving an LLM access to tools required custom function calling definitions...
       </p>
 
-      <p class="mb-4">
+      <p class="mb-4 text-[var(--text)]">
         (This is where your Medium blog content goes. You can copy-paste raw HTML or just write paragraphs.)
       </p>
     </article>

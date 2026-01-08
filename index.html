@@ -7,146 +7,171 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <link rel="stylesheet" href="./assets/css/style.css">
+    <script>
+      // Theme management
+      const theme = localStorage.getItem('theme') || 'mocha';
+      document.documentElement.setAttribute('data-theme', theme);
+
+      function updateThemeIcon(currentTheme) {
+        const moonIcon = document.getElementById('moon-icon');
+        const sunIcon = document.getElementById('sun-icon');
+        if (currentTheme === 'orange') {
+          moonIcon?.classList.add('hidden');
+          sunIcon?.classList.remove('hidden');
+        } else {
+          sunIcon?.classList.add('hidden');
+          moonIcon?.classList.remove('hidden');
+        }
+      }
+
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'mocha' ? 'orange' : 'mocha';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        updateThemeIcon(document.documentElement.getAttribute('data-theme'));
+      });
+    </script>
   </head>
-  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10">
+  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10 bg-[var(--bg)] text-[var(--text)]">
     <!-- Nav -->
-    <nav class="mt-6 pb-4 border-b border-[#313244]">
+    <nav class="mt-6 pb-4 border-b border-[var(--border)] flex justify-between items-end">
       <div>
-        <h1 class="font-serif text-4xl font-bold">Parth Sharma</h1>
+        <h1 class="font-serif text-4xl font-bold text-[var(--primary)]">Parth Sharma</h1>
         <div class="mt-5 flex flex-wrap gap-5">
           <a
             href="index.html"
-            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300 font-semibold"
+            class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300 font-semibold"
             >Home</a
           >
           <a
             href="./blogs/index.html"
-            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300"
+            class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300"
             >Blogs</a
           >
           <a
             href="./projects/index.html"
-            class="relative text-[#cba6f7] hover:text-[#fab387] transition-colors duration-300"
+            class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300"
             >Projects</a
           >
         </div>
       </div>
+      <button 
+        onclick="toggleTheme()" 
+        class="mb-1 p-2 rounded-lg border border-[var(--border)] text-[var(--primary)] hover:bg-[var(--border)] transition-all duration-300 cursor-pointer flex items-center justify-center"
+        title="Toggle Theme"
+      >
+        <!-- Moon Icon (Mocha) -->
+        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <!-- Sun Icon (Orange) -->
+        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
     </nav>
 
-    <!-- Banner Image -->
-    <div class="mt-6 mb-8">
-      <img 
-        src="./assets/img/banner.jpg" 
-        alt="Banner" 
-        class="w-full h-auto rounded-lg border border-[#313244] opacity-90 hover:opacity-100 transition-opacity"
-        onerror="this.src='https://github.com/catppuccin/catppuccin/raw/main/assets/preview.png'"
-      />
-    </div>
-
     <!-- Intro -->
-    <section class="space-y-6">
+    <section class="space-y-6 mt-8">
       <div>
-        <h2 class="text-xl text-[#cdd6f4] mb-4">
-          Hi, I'm <span class="font-bold text-[#f9e2af]">Parth</span>.
-        </h2>
-        
-        <p class="text-[#cdd6f4] leading-relaxed">
-          I love working with agentic frameworks, their tooling, and hacking around how systems work. Previously worked at <strong>Mem0 (YC S24)</strong>. Currently learning <strong>Golang</strong> and building agents.
+        <p class="text-[var(--text)] leading-relaxed">
+          <span class="text-[var(--link)] font-bold">Hi, I'm</span> <span class="text-[var(--accent)] font-bold">Parth.</span> I love working with agentic frameworks, their tooling, and hacking around how systems work. Previously worked at <strong>Mem0 (YC S24)</strong>. Currently learning <strong>Golang</strong> and building agents.
         </p>
       </div>
 
       <!-- Previously -->
       <div>
-        <h3 class="text-lg font-bold text-[#cba6f7] mb-2">Previously</h3>
-        <ul class="space-y-1 text-[#bac2de]">
-          <li>• <a href="https://mem0.ai/" class="hover:text-[#fab387]">Mem0 (YC S24)</a></li>
-          <li>• <a href="https://www.camel-ai.org/" class="hover:text-[#fab387]">Camel AI</a></li>
-          <li>• <a href="https://www.aci.dev/" class="hover:text-[#fab387]">AIPOLABS (aci.dev)</a></li>
-          <li>• <a href="https://www.esds.co.in/" class="hover:text-[#fab387]">ESDS</a></li>
+        <h3 class="text-lg font-bold text-[var(--primary)] mb-2">Previously</h3>
+        <ul class="space-y-1 text-[var(--text-muted)]">
+          <li>• <a href="https://mem0.ai/" class="hover:text-[var(--secondary)]">Mem0 (YC S24)</a></li>
+          <li>• <a href="https://www.camel-ai.org/" class="hover:text-[var(--secondary)]">Camel AI</a></li>
+          <li>• <a href="https://www.aci.dev/" class="hover:text-[var(--secondary)]">AIPOLABS (aci.dev)</a></li>
+          <li>• <a href="https://www.esds.co.in/" class="hover:text-[var(--secondary)]">ESDS</a></li>
           <li>• IIIT Allahabad (Research on process mining)</li>
         </ul>
       </div>
 
-      <hr class="border-[#313244] my-8" />
+      <hr class="border-[var(--border)] my-8" />
 
       <!-- Open Source -->
       <div>
-        <h2 class="text-2xl font-bold text-[#cba6f7] mb-6">Open Source Contributions</h2>
+        <h2 class="text-2xl font-bold text-[var(--primary)] mb-6">Open Source Contributions</h2>
         
         <div class="space-y-6">
           <!-- Item 1 -->
           <div>
-            <a href="https://github.com/camel-ai/camel" target="_blank" class="block group">
-              <h3 class="text-xl font-semibold text-[#89b4fa] mb-1 group-hover:underline">Camel-AI ↗</h3>
+            <a href="https://github.com/camel-ai/camel" target="_blank" class="block group text-[var(--link)]">
+              <h3 class="text-xl font-semibold mb-1 group-hover:underline">Camel-AI ↗</h3>
             </a>
-            <p class="text-[#a6adc8]">
+            <p class="text-[var(--text-muted)]">
               Core contributor focused on MCPToolkit, toolkits, and other features. Regular contributions to the main product with cookbooks, features, etc.
             </p>
           </div>
 
           <!-- Item 2 -->
           <div>
-            <a href="https://github.com/mem0ai/mem0-mcp" target="_blank" class="block group">
-              <h3 class="text-xl font-semibold text-[#89b4fa] mb-1 group-hover:underline">mem0-mcp ↗</h3>
+            <a href="https://github.com/mem0ai/mem0-mcp" target="_blank" class="block group text-[var(--link)]">
+              <h3 class="text-xl font-semibold mb-1 group-hover:underline">mem0-mcp ↗</h3>
             </a>
-            <p class="text-[#a6adc8] mb-2">
+            <p class="text-[var(--text-muted)] mb-2">
               Revamped mem0-mcp for the new API v2, enabling complex filters and expanding LLM tool-calling capabilities.
             </p>
-            <p class="text-[#a6adc8] text-sm">
+            <p class="text-[var(--text-muted)] text-sm">
               Now compatible as a Python package, Docker endpoint, and Smithery.
             </p>
           </div>
         </div>
       </div>
 
-      <hr class="border-[#313244] my-8" />
+      <hr class="border-[var(--border)] my-8" />
 
       <!-- Projects -->
       <div>
-        <h2 class="text-2xl font-bold text-[#cba6f7] mb-4">Projects</h2>
+        <h2 class="text-2xl font-bold text-[var(--primary)] mb-4">Projects</h2>
         <ul class="list-none space-y-4">
            
            <!-- Simpletex -->
            <li>
              <a href="https://simpletex.xyz" class="group flex items-baseline gap-2">
-               <span class="text-[#fab387] font-bold group-hover:underline">Simpletex.xyz</span>
-               <span class="text-[#585b70]">-</span>
-               <span class="text-[#bac2de]">LaTeX Resume Platform</span>
+               <span class="text-[var(--secondary)] font-bold group-hover:underline">Simpletex.xyz</span>
+               <span class="text-[var(--text-muted)]">-</span>
+               <span class="text-[var(--text)]">LaTeX Resume Platform</span>
              </a>
            </li>
 
-           <!-- Mem0 Deep Researcher -->
+           <!-- Memory Deep Researcher -->
            <li>
              <a href="https://github.com/parthshr370/Mem0-Deep-Researcher" class="group flex items-baseline gap-2">
-               <span class="text-[#fab387] font-bold group-hover:underline">Memory Deep Researcher</span>
-               <span class="text-[#585b70]">-</span>
-               <span class="text-[#bac2de]">Deep research agent for your memory database</span>
+               <span class="text-[var(--secondary)] font-bold group-hover:underline">Memory Deep Researcher</span>
+               <span class="text-[var(--text-muted)]">-</span>
+               <span class="text-[var(--text)]">Deep research agent for your memory database</span>
              </a>
            </li>
 
            <!-- Sound Intro Time -->
            <li>
              <a href="https://github.com/parthshr370/Sound-Intro-Time" class="group flex items-baseline gap-2">
-               <span class="text-[#fab387] font-bold group-hover:underline">Sound Intro Time</span>
-               <span class="text-[#585b70]">-</span>
-               <span class="text-[#bac2de]">Audio Analysis in Python</span>
+               <span class="text-[var(--secondary)] font-bold group-hover:underline">Sound Intro Time</span>
+               <span class="text-[var(--text-muted)]">-</span>
+               <span class="text-[var(--text)]">Audio Analysis in Python</span>
              </a>
            </li>
 
         </ul>
       </div>
 
-      <hr class="border-[#313244] my-8" />
+      <hr class="border-[var(--border)] my-8" />
 
       <!-- Socials -->
       <div class="flex gap-4 text-sm">
-        <a href="https://twitter.com/parthshr370" class="text-[#f9e2af] hover:text-[#fab387] hover:underline">Twitter</a>
-        <span class="text-[#585b70]">/</span>
-        <a href="https://github.com/parthshr370" class="text-[#f9e2af] hover:text-[#fab387] hover:underline">Github</a>
-        <span class="text-[#585b70]">/</span>
-        <a href="https://linkedin.com/in/parthshr370" class="text-[#f9e2af] hover:text-[#fab387] hover:underline">LinkedIn</a>
-        <span class="text-[#585b70]">/</span>
-        <a href="mailto:parthshar370@gmail.com" class="text-[#f9e2af] hover:text-[#fab387] hover:underline">Email</a>
+        <a href="https://twitter.com/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Twitter</a>
+        <span class="text-[var(--text-muted)]">/</span>
+        <a href="https://github.com/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Github</a>
+        <span class="text-[var(--text-muted)]">/</span>
+        <a href="https://linkedin.com/in/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">LinkedIn</a>
+        <span class="text-[var(--text-muted)]">/</span>
+        <a href="mailto:parthshar370@gmail.com" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Email</a>
       </div>
 
     </section>

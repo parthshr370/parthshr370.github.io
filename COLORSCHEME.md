@@ -1,104 +1,50 @@
 # Portfolio Color Scheme Reference
 
-Based on **Catppuccin Mocha** palette. Use this as a reference when creating new pages or components.
+This portfolio supports multiple themes. The default is **Catppuccin Mocha**, and an alternative **Orange Theme** is available via the theme toggle.
 
 ---
 
-## Base Colors
+## Catppuccin Mocha (Default)
+
+Based on **Catppuccin Mocha** palette. 
 
 | Element | Color | Hex | CSS Variable |
 |---------|-------|-----|--------------|
-| Background | Base | `#1e1e2e` | `var(--ctp-base)` |
-| Background Alt | Mantle | `#181825` | `var(--ctp-mantle)` |
-| Background Dark | Crust | `#11111b` | `var(--ctp-crust)` |
+| Background | Base | `#1e1e2e` | `var(--bg)` |
+| Text | Text | `#cdd6f4` | `var(--text)` |
+| Muted Text | Subtext0 | `#a6adc8` | `var(--text-muted)` |
+| Primary | Mauve | `#cba6f7` | `var(--primary)` |
+| Secondary | Peach | `#fab387` | `var(--secondary)` |
+| Accent | Yellow | `#f9e2af` | `var(--accent)` |
+| Links | Blue | `#89b4fa` | `var(--link)` |
+| Border | Surface0 | `#313244` | `var(--border)` |
 
 ---
 
-## Text Colors
+## Orange Theme
 
-| Element | Color | Hex | CSS Variable | Usage |
-|---------|-------|-----|--------------|-------|
-| Primary Text | Text | `#cdd6f4` | `var(--ctp-text)` | Body text, paragraphs |
-| Secondary Text | Subtext1 | `#bac2de` | `var(--ctp-subtext1)` | Less important text |
-| Muted Text | Subtext0 | `#a6adc8` | `var(--ctp-subtext0)` | Descriptions, metadata |
-| Disabled/Faint | Overlay0 | `#6c7086` | `var(--ctp-overlay0)` | Timestamps, tags |
+A high-contrast theme with orange accents. See [ORANGE_THEME.md](./ORANGE_THEME.md) for full details.
 
----
-
-## Headings
-
-| Element | Color | Hex | CSS Variable |
-|---------|-------|-----|--------------|
-| H1 (Page Title) | Mauve | `#cba6f7` | `var(--ctp-mauve)` |
-| H2 (Section) | Mauve | `#cba6f7` | `var(--ctp-mauve)` |
-| H3 (Subsection) | Lavender | `#b4befe` | `var(--ctp-lavender)` |
-| H4+ | Text | `#cdd6f4` | `var(--ctp-text)` |
+| Element | Hex | CSS Variable |
+|---------|-----|--------------|
+| Background | `#1a0f0c` | `var(--bg)` |
+| Text | `#eeeeee` | `var(--text)` |
+| Muted Text | `#808080` | `var(--text-muted)` |
+| Primary | `#EC5B2B` | `var(--primary)` |
+| Secondary | `#EE7948` | `var(--secondary)` |
+| Accent | `#FFF7F1` | `var(--accent)` |
+| Links | `#EC5B2B` | `var(--link)` |
+| Border | `#EC5B2B` | `var(--border)` |
 
 ---
 
-## Links & Interactive
+## Usage in Code
 
-| Element | Color | Hex | CSS Variable | Usage |
-|---------|-------|-----|--------------|-------|
-| Primary Links | Blue | `#89b4fa` | `var(--ctp-blue)` | Standard links |
-| Link Hover | Sapphire | `#74c7ec` | `var(--ctp-sapphire)` | Hover state |
-| Project Titles | Peach | `#fab387` | `var(--ctp-peach)` | Project names, highlights |
-| Social Links | Green | `#a6e3a1` | `var(--ctp-green)` | Twitter, GitHub, etc. |
-| CTA/Important | Yellow | `#f9e2af` | `var(--ctp-yellow)` | Call-to-action, names |
+The site uses CSS variables defined in `assets/css/style.css`. Themes are toggled by setting the `data-theme` attribute on the `<html>` element.
 
----
+- `mocha` (Default)
+- `orange`
 
-## Text Formatting (Bold/Italic)
-
-Inspired by Obsidian Catppuccin theme - bold and italic get their own colors.
-
-| Element | Color | Hex | CSS Variable | Usage |
-|---------|-------|-----|--------------|-------|
-| **Bold** | Sapphire | `#74c7ec` | `var(--ctp-sapphire)` | `<strong>`, `<b>` |
-| *Italic* | Green | `#a6e3a1` | `var(--ctp-green)` | `<em>`, `<i>` |
-| ***Bold+Italic*** | Teal | `#94e2d5` | `var(--ctp-teal)` | Combined formatting |
-| ~~Strikethrough~~ | Maroon | `#eba0ac` | `var(--ctp-maroon)` | `<del>`, `<s>` |
-
----
-
-## Accent Colors
-
-| Element | Color | Hex | CSS Variable | Usage |
-|---------|-------|-----|--------------|-------|
-| Name Highlight | Yellow | `#f9e2af` | `var(--ctp-yellow)` | "I'm Parth" |
-| Project Names | Peach | `#fab387` | `var(--ctp-peach)` | Project titles |
-| Section Headers | Mauve | `#cba6f7` | `var(--ctp-mauve)` | "Open Source", "Projects" |
-| Success/Positive | Green | `#a6e3a1` | `var(--ctp-green)` | Achievements |
-| Warning | Yellow | `#f9e2af` | `var(--ctp-yellow)` | Notices |
-| Error | Red | `#f38ba8` | `var(--ctp-red)` | Errors, warnings |
-
----
-
-## Borders & Surfaces
-
-| Element | Color | Hex | CSS Variable | Usage |
-|---------|-------|-----|--------------|-------|
-| Border Light | Surface0 | `#313244` | `var(--ctp-surface0)` | Dividers, hr |
-| Border Medium | Surface1 | `#45475a` | `var(--ctp-surface1)` | Card borders |
-| Border Dark | Surface2 | `#585b70` | `var(--ctp-surface2)` | Separators (slashes) |
-| Code Block BG | Mantle | `#181825` | `var(--ctp-mantle)` | Code backgrounds |
-
----
-
-## Code Blocks (Syntax Highlighting)
-
-| Element | Color | Hex | CSS Variable |
-|---------|-------|-----|--------------|
-| Background | Mantle | `#181825` | `var(--ctp-mantle)` |
-| Text | Text | `#cdd6f4` | `var(--ctp-text)` |
-| Keywords | Mauve | `#cba6f7` | `var(--ctp-mauve)` |
-| Strings | Green | `#a6e3a1` | `var(--ctp-green)` |
-| Numbers | Peach | `#fab387` | `var(--ctp-peach)` |
-| Functions | Blue | `#89b4fa` | `var(--ctp-blue)` |
-| Comments | Overlay0 | `#6c7086` | `var(--ctp-overlay0)` |
-| Variables | Text | `#cdd6f4` | `var(--ctp-text)` |
-| Types/Classes | Yellow | `#f9e2af` | `var(--ctp-yellow)` |
-| Operators | Sky | `#89dceb` | `var(--ctp-sky)` |
 
 ---
 

@@ -13,7 +13,20 @@
 }
 
 :root {
-    /* Catppuccin Mocha Palette */
+    /* Default: Catppuccin Mocha */
+    --bg: #1e1e2e;
+    --text: #cdd6f4;
+    --text-muted: #a6adc8;
+    --primary: #cba6f7;
+    --secondary: #fab387;
+    --accent: #f9e2af;
+    --link: #89b4fa;
+    --link-hover: #74c7ec;
+    --border: #313244;
+    --bold: #74c7ec;
+    --italic: #a6e3a1;
+
+    /* Catppuccin Mocha Palette (internal reference) */
     --ctp-rosewater: #f5e0dc;
     --ctp-flamingo: #f2cdcd;
     --ctp-pink: #f5c2e7;
@@ -42,65 +55,75 @@
     --ctp-crust: #11111b;
 }
 
+[data-theme="orange"] {
+    --bg: #050505; /* Pitch Black */
+    --text: #d1d1d1;
+    --text-muted: #808080;
+    --primary: #EC5B2B; /* Orange */
+    --secondary: #EE7948;
+    --accent: #FFF7F1;
+    --link: #6ba1e6; /* Blue as seen in the image */
+    --link-hover: #82aaff;
+    --border: #262626;
+    --bold: #EC5B2B; /* Orange */
+    --italic: #e5c07b;
+}
+
 body {
-    background-color: #1e1e2e !important; /* Catppuccin Mocha Base */
-    color: var(--ctp-text) !important;
+    background-color: var(--bg) !important;
+    color: var(--text) !important;
     font-family: 'ZedMono', monospace !important;
 }
 
-/* Force Title to be Mono and Mauve */
+/* Force Title to be Mono and Primary */
 h1.font-serif {
     font-family: 'ZedMono', monospace !important;
     font-weight: bold;
-    color: var(--ctp-mauve) !important;
+    color: var(--primary) !important;
 }
 
 /* Headings */
 h1, h2, h3, h4 {
-    color: var(--ctp-mauve) !important;
+    color: var(--primary) !important;
 }
 
 /* Links */
 a {
-    color: var(--ctp-blue) !important;
+    color: var(--link) !important;
     transition: color 0.2s ease;
 }
 
 a:hover {
-    color: var(--ctp-sapphire) !important;
+    color: var(--link-hover) !important;
     text-decoration: underline;
 }
 
 /* Navigation */
 nav {
-    border-bottom: 1px solid var(--ctp-surface1) !important;
+    border-bottom: 1px solid var(--border) !important;
 }
 
 nav a.relative::after {
-    background-color: var(--ctp-mauve) !important;
+    background-color: var(--primary) !important;
 }
 
 hr {
-    border-color: var(--ctp-surface1) !important;
+    border-color: var(--border) !important;
 }
 
 /* Text Highlights */
 .font-semibold {
-    color: var(--ctp-peach) !important;
+    color: var(--secondary) !important;
 }
 
-.text-gray-600, .text-gray-700, .text-gray-900 {
-    color: var(--ctp-subtext0) !important;
-}
-
-/* Bold - Sapphire (like Obsidian Catppuccin) */
+/* Bold */
 strong, b {
-    color: var(--ctp-sapphire) !important;
+    color: var(--bold) !important;
     font-weight: 700;
 }
 
-/* Italic - Green (like Obsidian Catppuccin) */
+/* Italic */
 em, i {
-    color: var(--ctp-green) !important;
+    color: var(--italic) !important;
     font-style: italic;
 }
