@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JSON, Marshals and Go</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-none.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+    <script>
+      // Theme management
+      const theme = localStorage.getItem('theme') || 'mocha';
+      document.documentElement.setAttribute('data-theme', theme);
+
+      function updateThemeIcon(currentTheme) {
+        const moonIcon = document.getElementById('moon-icon');
+        const sunIcon = document.getElementById('sun-icon');
+        if (currentTheme === 'orange') {
+          moonIcon?.classList.add('hidden');
+          sunIcon?.classList.remove('hidden');
+        } else {
+          sunIcon?.classList.add('hidden');
+          moonIcon?.classList.remove('hidden');
+        }
+      }
+
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'mocha' ? 'orange' : 'mocha';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        updateThemeIcon(document.documentElement.getAttribute('data-theme'));
+      });
+    </script>
+  </head>
+  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10 bg-[var(--bg)] text-[var(--text)]">
+    <nav class="mt-6 flex justify-between items-center">
+      <a href="./index.html" class="text-sm font-semibold hover:underline text-[var(--primary)]">← Back to Blogs</a>
+      <button 
+        onclick="toggleTheme()" 
+        class="p-2 rounded-lg border border-[var(--border)] text-[var(--primary)] hover:bg-[var(--border)] transition-all duration-300 cursor-pointer flex items-center justify-center"
+        title="Toggle Theme"
+      >
+        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
+    </nav>
+    
+    <article class="mt-8">
+      <h1 class="text-3xl font-bold mb-2 text-[var(--primary)]">JSON, Marshals and Go</h1>
+      <p class="text-[var(--text-muted)] mb-6">January 21, 2026 • 5 min read</p>
+
+      <!-- Table of Contents -->
+      <div class="mb-10">
+        <h2 class="text-xl font-bold mb-4 text-[var(--primary)]">Table of contents</h2>
+        <details class="group border border-[var(--border)] rounded-lg p-3 bg-[var(--bg)]">
+          <summary class="cursor-pointer list-none flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+            <span class="transition-transform group-open:rotate-90">></span>
+            <span>Open Table of contents</span>
+          </summary>
+          <ul class="mt-4 space-y-2 pl-6 border-l border-[var(--border)] text-sm">
+            <li><a href="#structs" class="hover:underline text-[var(--link)]">Structs</a></li>
+            <li><a href="#visualizing" class="hover:underline text-[var(--link)]">Visualizing the Process</a></li>
+            <li><a href="#marshal" class="hover:underline text-[var(--link)]">Marshal</a></li>
+            <li><a href="#tags" class="hover:underline text-[var(--link)]">Struct Tags</a></li>
+            <li><a href="#quirks" class="hover:underline text-[var(--link)]">Some Quirks to Remember</a></li>
+            <li><a href="#unmarshal" class="hover:underline text-[var(--link)]">Unmarshal</a></li>
+          </ul>
+        </details>
+      </div>
+
+      <p class="mb-6 leading-relaxed">
+        Classically, JSON is a simple data storage format, something like a dictionary with simple key-value pairs. Along with the web, it's a great way to transfer data in a clean, standard way across various mediums. (We see this with protocols like <a href="https://www.jsonrpc.org/specification" class="text-[var(--link)] hover:underline">JSON-RPC</a>, which is a fundamental building block for our beloved <a href="https://modelcontextprotocol.io/" class="text-[var(--link)] hover:underline">MCP</a>.)
+      </p>
+
+      <p class="mb-6 leading-relaxed">
+        While Go isn't "JSON native" like JavaScript, it has a very similar and robust way of handling these data structures using <strong>Structs</strong>.
+      </p>
+
+      <h2 id="structs" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Structs</h2>
+
+      <p class="mb-4">
+        Structs are essentially data blueprints. They pair up an object key with a specific data type. When you create an object from a struct, Go allocates a fixed block of memory for those fields so we can populate them.
+      </p>
+
+      <pre><code class="language-go">type Message struct {
+    Name string
+    Body string
+    Time int64
+}</code></pre>
+
+      <p class="mb-4 font-semibold">
+        Note: Notice how Name, Body, and Time start with capital letters? In Go, only Exported (capitalized) fields are visible to the JSON package. If you named them name or body (lowercase), they would be ignored and your JSON would be empty!
+      </p>
+
+      <p class="mb-4">
+        Now, let's create an instance of this struct (this is pure Go data, not JSON yet):
+      </p>
+
+      <pre><code class="language-go">m := Message{"Alice", "Hello", 1294706395881547000}</code></pre>
+
+      <p class="mb-4">
+        When we convert this to JSON (Marshal it), it essentially becomes a slice of bytes holding our key-value pairs:
+      </p>
+
+      <pre><code class="language-go">b == []byte(`{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`)</code></pre>
+
+      <h3 id="visualizing" class="text-xl font-bold mt-12 mb-6 text-[var(--primary)]">Visualizing the Process</h3>
+
+      <img src="../assets/img/blog1_img_json_go.png" alt="Visualizing JSON Marshalling in Go" class="w-full rounded-xl mb-10 border border-[var(--border)]" />
+
+      <p class="mb-6 leading-relaxed">
+        Let's see how Go handles this conversion process: <strong>Encoding (Marshal)</strong> and <strong>Decoding (Unmarshal)</strong>.
+      </p>
+
+      <h2 id="marshal" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Marshal</h2>
+
+      <p class="mb-4">
+        The <code>Marshal</code> function is essentially a way of converting your in-memory Go data structure (the struct) into the JSON format. The implementation in the standard library is simple and clean:
+      </p>
+
+      <pre><code class="language-go">func Marshal(v interface{}) ([]byte, error)</code></pre>
+
+      <p class="mb-4">
+        See, it's really simple. We name our function <code>Marshal</code>, which takes a value <code>v</code> of type <code>interface{}</code> and returns two things: a slice of bytes (<code>[]byte</code>) and an error if anything goes wrong.
+      </p>
+
+      <p class="mb-4">
+        Why <code>interface{}</code>? This is Go's way of saying "I accept any type." It doesn't matter what data you put in, Marshal will inspect it (using <a href="https://go.dev/blog/laws-of-reflection" class="text-[var(--link)] hover:underline">reflection</a>) and figure out how to represent it as JSON bytes.
+      </p>
+
+      <p class="mb-4">
+        Here is a full program that takes a variable <code>m</code>, marshals (encodes) it, and stores the result in <code>b</code>:
+      </p>
+
+      <pre><code class="language-go">package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type Message struct {
+	Name string
+	Body string
+	Time int64
+}
+
+func main() {
+	m := Message{"Alice", "Hello", 1294706395881547000}
+
+	b, err := json.Marshal(m)
+
+    // Using %s to print bytes as string, %v for raw bytes
+	fmt.Printf("Raw bytes: %v\nError: %v\n", b, err)
+    fmt.Println("JSON String:", string(b))
+}</code></pre>
+
+      <p class="mb-4">
+        When you run this, the raw output looks like a slice of numbers (ASCII codes):
+      </p>
+
+      <pre><code class="language-go">Raw bytes: [123 34 78 97 109 101 34 58 34 65 108 105 99 101 34 44 34 66 111 100 121 34 58 34 72 101 108 108 111 34 44 34 84 105 109 101 34 58 49 50 57 52 55 48 54 51 57 53 56 56 49 53 52 55 48 48 48 125]
+Error: &lt;nil&gt;</code></pre>
+
+      <p class="mb-4">
+        But if we cast those bytes to a string, valid JSON:
+      </p>
+
+      <pre class="bg-[var(--border)] p-4 rounded-lg overflow-x-auto mb-4 text-sm"><code>{"Name":"Alice","Body":"Hello","Time":1294706395881547000}</code></pre>
+
+      <h3 id="tags" class="text-xl font-bold mt-12 mb-6 text-[var(--primary)]">Struct Tags</h3>
+      <p class="mb-6">
+        Sometimes you want your struct field to be <code>Name</code> (Capitalized for Go), but you want the JSON key to be lowercase <code>"name"</code>. You can use <strong>tags</strong> for this:
+      </p>
+
+      <pre><code class="language-go">type Message struct {
+    Name string `json:"name"` // Becomes "name" in JSON
+    Body string `json:"body"`
+}</code></pre>
+
+      <h3 id="quirks" class="text-xl font-bold mt-12 mb-6 text-[var(--primary)]">Some Quirks to Remember</h3>
+      <ul class="list-disc pl-6 mb-8 space-y-3">
+        <li><strong>Map Keys:</strong> JSON only allows strings as keys. So if you use a map in Go, it must be <code>map[string]T</code>.</li>
+        <li><strong>Unsupported Types:</strong> You cannot encode Channels, Complex numbers, or Functions.</li>
+        <li><strong>Cycles:</strong> If struct A points to struct B, and B points back to A, Marshal will loop forever (and crash).</li>
+        <li><strong>Pointers:</strong> These are automatically followed. If a pointer is <code>nil</code>, it becomes <code>null</code> in JSON.</li>
+      </ul>
+
+      <h2 id="unmarshal" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Unmarshal</h2>
+
+      <p class="mb-4">
+        Now that we have data stored as JSON bytes, we want to decode it back into something Go can understand (our Struct). This effectively inverts the Marshal function.
+      </p>
+
+      <pre><code class="language-go">func Unmarshal(data []byte, v interface{}) error</code></pre>
+
+      <p class="mb-4">
+        If you take a look, <code>Unmarshal</code> accepts two values:
+      </p>
+      <ol class="list-decimal pl-6 mb-4 space-y-2">
+        <li><code>data</code>: The slice of bytes containing our JSON.</li>
+        <li><code>v</code>: A <strong>pointer</strong> to the variable where we want to store the result.</li>
+      </ol>
+
+      <p class="mb-4 font-semibold">
+        Crucial detail: We pass v as a pointer (using &) so that Unmarshal can modify that variable directly in memory. If we didn't pass a pointer, it would just modify a copy, and our original variable would stay empty!
+      </p>
+
+      <p class="mb-4">
+        Let's see this in action:
+      </p>
+
+      <pre><code class="language-go">package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type Message struct {
+	Name string
+	Body string
+	Time int64
+}
+
+func main() {
+    // 1. Setup our JSON bytes (simulating data we received)
+	m := Message{"Alice", "Hello", 1294706395881547000}
+	b, _ := json.Marshal(m)
+	fmt.Println("Original JSON:", string(b))
+
+	// 2. Prepare a place to hold the decoded data
+    var um Message
+
+    // 3. Unmarshal! Pass the bytes (b) and the address of um (&um)
+	err := json.Unmarshal(b, &um)
+
+    if err != nil {
+        fmt.Println("Error:", err)
+    }
+
+	fmt.Printf("Decoded Struct: %+v\n", um)
+    fmt.Println("Name:", um.Name)
+}</code></pre>
+
+      <p class="mb-4">
+        When we run this, we see that <code>um</code> has been populated with the data from our JSON bytes:
+      </p>
+
+      <pre class="bg-[var(--border)] p-4 rounded-lg overflow-x-auto mb-4 text-sm"><code>Original JSON: {"Name":"Alice","Body":"Hello","Time":1294706395881547000}
+Decoded Struct: {Name:Alice Body:Hello Time:1294706395881547000}
+Name: Alice</code></pre>
+
+      <p class="mb-4">
+        Go is also very forgiving here. If the JSON has fields that don't exist in your struct, it simply ignores them. If your struct has fields missing from the JSON, they just stay as their default values (empty strings or zeros). This makes it very robust for real-world APIs!
+      </p>
+
+      <hr class="border-[var(--border)] my-8" />
+
+      <p class="text-sm text-[var(--text-muted)]">
+        Major inspirations and examples for this blog came from this official go blog - <a href="https://go.dev/blog/json" class="text-[var(--link)] hover:underline">https://go.dev/blog/json</a>
+      </p>
+      <p class="text-sm text-[var(--text-muted)] mt-2">
+        I would also suggest you to checkout the official encodings/json package to see how the whole package was actually built - <a href="https://pkg.go.dev/encoding/json" class="text-[var(--link)] hover:underline">https://pkg.go.dev/encoding/json</a>
+      </p>
+
+    </article>
+  </body>
+</html>
