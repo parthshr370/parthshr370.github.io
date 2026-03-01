@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subagents: Breaking Down Complex Tasks</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="shortcut icon" href="../../assets/img/favicon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-none.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script>
+      // Theme management
+      const theme = localStorage.getItem('theme') || 'orange';
+      document.documentElement.setAttribute('data-theme', theme);
+
+      function updateThemeIcon(currentTheme) {
+        const moonIcon = document.getElementById('moon-icon');
+        const sunIcon = document.getElementById('sun-icon');
+        if (currentTheme === 'orange') {
+          moonIcon?.classList.add('hidden');
+          sunIcon?.classList.remove('hidden');
+        } else {
+          sunIcon?.classList.add('hidden');
+          moonIcon?.classList.remove('hidden');
+        }
+      }
+
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'mocha' ? 'orange' : 'mocha';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        updateThemeIcon(document.documentElement.getAttribute('data-theme'));
+      });
+    </script>
+  </head>
+  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10 bg-[var(--bg)] text-[var(--text)]">
+    <nav class="mt-6 flex justify-between items-center">
+      <a href="../index.html" class="text-sm font-semibold hover:underline text-[var(--primary)]">← Back to Blogs</a>
+      <button 
+        onclick="toggleTheme()" 
+        class="p-2 rounded-lg border border-[var(--border)] text-[var(--primary)] hover:bg-[var(--border)] transition-all duration-300 cursor-pointer flex items-center justify-center"
+        title="Toggle Theme"
+      >
+        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
+    </nav>
+    
+    <article class="mt-8">
+      <h1 class="text-3xl font-bold mb-2 text-[var(--primary)]">Subagents: Breaking Down Complex Tasks</h1>
+      <p class="text-[var(--text-muted)] mb-6">March 1, 2026 • 7 min read</p>
+
+      <!-- Table of Contents -->
+      <div class="mb-10">
+        <h2 class="text-xl font-bold mb-4 text-[var(--primary)]">Table of contents</h2>
+        <details class="group border border-[var(--border)] rounded-lg p-3 bg-[var(--bg)]">
+          <summary class="cursor-pointer list-none flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+            <span class="transition-transform group-open:rotate-90">></span>
+            <span>Open Table of contents</span>
+          </summary>
+          <ul class="mt-4 space-y-2 pl-6 border-l border-[var(--border)] text-sm">
+            <li><a href="#the-agent-loop" class="hover:underline text-[var(--link)]">The Agent Loop</a></li>
+            <li><a href="#what-is-a-subagent" class="hover:underline text-[var(--link)]">What Is a Subagent</a></li>
+            <li><a href="#the-flow" class="hover:underline text-[var(--link)]">The Flow</a></li>
+            <li><a href="#making-it-work" class="hover:underline text-[var(--link)]">Making It Work</a></li>
+            <li><a href="#hardcode" class="hover:underline text-[var(--link)]">Alternative: Just Hardcode It</a></li>
+            <li><a href="#sync-vs-async" class="hover:underline text-[var(--link)]">Sync vs Async</a></li>
+            <li><a href="#handling-failures" class="hover:underline text-[var(--link)]">Handling Failures</a></li>
+            <li><a href="#try-it" class="hover:underline text-[var(--link)]">Try It Yourself</a></li>
+            <li><a href="#real-insight" class="hover:underline text-[var(--link)]">The Real Insight</a></li>
+          </ul>
+        </details>
+      </div>
+
+      <p class="mb-6 text-sm text-[var(--text-muted)]">
+        <strong>Prerequisites:</strong> Python, basic idea of agents, tools, memory. Rest will be taken care of :)
+      </p>
+
+      <h2 id="the-agent-loop" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">The Agent Loop</h2>
+
+      <p class="mb-6 leading-relaxed">
+        An agent, at its core, is a simple loop.
+      </p>
+
+      <p class="mb-6 leading-relaxed">
+        At the center is an LLM. Around it, we add <em>tools</em> (to interact with systems), <em>messages/history</em> (to carry context), and some <em>control logic</em> (retries, validation, stopping conditions). Together, these pieces form what we call an agent.
+      </p>
+
+      <p class="mb-4 leading-relaxed">
+        A simplified run-state looks like this:
+      </p>
+
+      <pre><code class="language-json">{
+  "messages": [
+    {"role": "user", "content": "what is 2+3"}],
+  "tools": ["add", "search", "calendar"],
+  "memory": {
+    "conversation_history": []
+  },
+  "done": false
+}</code></pre>
+
+      <p class="mb-4 leading-relaxed">
+        Each iteration updates this state:
+      </p>
+
+      <ul class="list-disc pl-6 mb-6 space-y-2">
+        <li>Model reads messages + tools</li>
+        <li>Model emits either:
+          <ul class="list-disc pl-6 mt-1 space-y-1">
+            <li>final <strong>output</strong>, or</li>
+            <li>a <strong>tool call</strong> request</li>
+          </ul>
+        </li>
+        <li>Tool result is appended back to messages</li>
+        <li>Loop continues until <code>done = true</code></li>
+      </ul>
+
+      <p class="mb-6 leading-relaxed">
+        So fundamentally:
+      </p>
+
+      <p class="mb-6 text-lg font-bold text-[var(--primary)]">
+        agent = function + loop + memory + tool calls
+      </p>
+
+      <hr class="border-[var(--border)] my-8" />
+
+      <p class="mb-4 leading-relaxed">
+        This becomes a bit problematic when we look at the fact that each agent run needs to account for its <em>memory history</em>, <em>tool calls</em>, its own history, and the subsequent answer.
+      </p>
+
+      <p class="mb-4 leading-relaxed">
+        This piles up pretty quickly and becomes bloated with each step we take.
+      </p>
+
+      <p class="mb-4 leading-relaxed">
+        In turn clogging up the context window and slowing down the agent to do complex tasks for long runs.
+      </p>
+
+      <p class="mb-6 leading-relaxed">
+        This is where we introduce <strong>subagents</strong>.
+      </p>
+
+      <h2 id="what-is-a-subagent" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">What Is a Subagent</h2>
+
+      <p class="mb-4 leading-relaxed">
+        Subagents (if we put it simply) are just <strong>nested agent runs</strong>.
+      </p>
+
+      <p class="mb-4 leading-relaxed">
+        A main agent starts another agent (on the side) for <em>narrower tasks</em> and gets back an output from the side run. It then continues with a more refined, specialised output.
+      </p>
+
+      <p class="mb-6 leading-relaxed">
+        Like a parent branching out its children to do individual special tasks - the <strong>final output</strong> is a culmination of all these small task outputs.
+      </p>
+
+      <img src="./subagents.png" alt="Main Agent delegating to Subagent A, Subagent B, and producing Final Output" class="w-full rounded-xl mb-6 border border-[var(--border)]" />
+
+      <p class="mb-4 leading-relaxed">
+        This helps save the agent a lot of <strong>context</strong>, reduces bias, and <em>decouples</em> a lot of load from the main agent stream.
+      </p>
+
+      <p class="mb-6 leading-relaxed">
+        To keep behavior predictable, pass <em>explicit inputs</em> instead of dumping full context blindly - a <strong>task description</strong>, an optional context slice, <strong>constraints</strong>, and the expected output format. This keeps subagent runs tighter and easier to reason about.
+      </p>
+
+      <h3 id="the-flow" class="text-xl font-bold mt-12 mb-6 text-[var(--primary)]">The Flow</h3>
+
+      <p class="mb-4 leading-relaxed">
+        When we run a subagent, the flow is usually:
+      </p>
+
+      <ol class="list-decimal pl-6 mb-6 space-y-2">
+        <li>Main agent gets <em>input</em> and decides next action (tool call / end / delegate)</li>
+        <li>Parent runs child: <code>child.run(...)</code></li>
+        <li>Child gets its own <strong>isolated run</strong> loop/state</li>
+        <li>Child returns <strong>output</strong> (or error/timeout)</li>
+        <li>Parent receives that output (not necessarily full child history)</li>
+        <li>Parent continues or <strong>ends</strong></li>
+      </ol>
+
+      <img src="./sub-run.png" alt="Sequence diagram showing User to Main Agent to Subagent delegation flow" class="w-full rounded-xl mb-6 border border-[var(--border)]" />
+
+      <hr class="border-[var(--border)] my-8" />
+
+      <h2 id="making-it-work" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Making It Work</h2>
+
+      <p class="mb-4 leading-relaxed">
+        Here's the thing - to use a subagent, you literally just wrap it as a tool:
+      </p>
+
+      <p class="mb-4 text-sm text-[var(--text-muted)]">
+        ( Tools being simple functions with a return value that you give to an agent to interact with the real world )
+      </p>
+
+      <pre><code class="language-python"># create a simple subagent
+math_agent = Agent(
+    model="openai:gpt-4",
+    system_prompt="You are a math expert. Solve problems and return just the answer."
+)
+
+# Wrap as a tool
+def ask_math(task: str) -> str:
+    result = math_agent.run_sync(task)
+    return result.output
+
+# Main agent uses it
+main_agent = Agent(
+    model="openai:gpt-4",
+    tools=[ask_math],
+    system_prompt="Use ask_math for any mathematical calculations."
+)</code></pre>
+
+      <p class="mb-6 leading-relaxed">
+        That's it. The main agent sees <code>ask_math</code> as a tool. When it needs math, it calls it. The subagent runs in its own clean context, returns the result, and the main agent continues.
+      </p>
+
+      <h3 id="hardcode" class="text-xl font-bold mt-12 mb-6 text-[var(--primary)]">Alternative: Just Hardcode It</h3>
+
+      <p class="mb-4 leading-relaxed">
+        Sometimes you don't want the LLM deciding when to delegate. You want to control it in code:
+      </p>
+
+      <pre><code class="language-python">def handle_request(user_input: str):
+    if "math" in user_input.lower():
+        return math_agent.run_sync(user_input)
+    elif "write" in user_input.lower():
+        return writer_agent.run_sync(user_input)
+    else:
+        return general_agent.run_sync(user_input)</code></pre>
+
+      <p class="mb-6 leading-relaxed">
+        Your code decides. Not the agent. Use this when routing logic is simple or you need strict control.
+      </p>
+
+      <hr class="border-[var(--border)] my-8" />
+
+      <h2 id="sync-vs-async" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Sync vs Async</h2>
+
+      <p class="mb-4 leading-relaxed">
+        Here's where it gets interesting. You can call a subagent in two ways:
+      </p>
+
+      <p class="mb-4 leading-relaxed">
+        <strong>Sync</strong> - <em>you wait for it:</em>
+      </p>
+
+      <p class="mb-4 leading-relaxed">
+        The main agent pauses. The subagent works. When it's done, the main agent gets the result and moves on.
+      </p>
+
+      <p class="mb-6 leading-relaxed">
+        Use this when you <strong>need the answer right now</strong> to continue. Like asking for a calculation before you can formulate your response.
+      </p>
+
+      <p class="mb-4 leading-relaxed">
+        <strong>Async</strong> - <em>you keep going:</em>
+      </p>
+
+      <p class="mb-4 leading-relaxed">
+        The main agent fires off the subagent and immediately continues. The subagent works in the background. Later, you check if it's done.
+      </p>
+
+      <p class="mb-6 leading-relaxed">
+        Use this for <strong>independent tasks</strong> where the user doesn't need to wait. Like "analyze this document" while you keep chatting about something else.
+      </p>
+
+      <p class="mb-6 leading-relaxed">
+        The core idea is the same in both. Only the timing of when the subagent returns the output changes.
+      </p>
+
+      <hr class="border-[var(--border)] my-8" />
+
+      <h2 id="handling-failures" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Handling Failures</h2>
+
+      <p class="mb-4 leading-relaxed">
+        Subagents fail like any other tool. The child can return:
+      </p>
+
+      <ul class="list-disc pl-6 mb-6 space-y-2">
+        <li><strong>Success:</strong> Output you can use</li>
+        <li><strong>Error:</strong> Something went wrong</li>
+        <li><strong>Timeout:</strong> Took too long</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed">
+        The parent then decides: retry, fallback, escalate, or continue with partial results.
+      </p>
+
+      <p class="mb-4 leading-relaxed">
+        I like to imagine a subagent as a function with params that goes like -
+      </p>
+
+      <pre><code class="language-python">subagent(
+    task="solve this",
+    context={"user": "admin"},
+    timeout=30,
+    error="raise"
+)</code></pre>
+
+      <p class="mb-6 leading-relaxed">
+        This is actually a feature. With subagents, failure is <strong>contained</strong>. If the math subagent fails, your main agent can try a different approach or ask for clarification. The error doesn't crash the whole system.
+      </p>
+
+      <hr class="border-[var(--border)] my-8" />
+
+      <h2 id="try-it" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Try It Yourself</h2>
+
+      <p class="mb-4 leading-relaxed">
+        Here's a complete runnable example:
+      </p>
+
+      <pre><code class="language-python">from pydantic_ai import Agent
+
+# Create a simple subagent with a system prompt
+math_agent = Agent(
+    model="openai:gpt-5.2",
+    system_prompt="You are a math expert. Solve the problem and return just the numerical answer.",
+)
+
+
+# wrap it as a tool ( return value is the run output of the subagent run )
+def ask_math(task: str) -> str:
+    """Ask the math expert to solve a problem."""
+    result = math_agent.run_sync(task)
+    return result.output
+
+
+# load the main agent with the subagent as a tool
+main_agent = Agent(
+    model="openai:gpt-5.2",
+    tools=[ask_math],
+    system_prompt="You are a helpful assistant. Use the ask_math tool for any mathematical calculations.",
+)
+
+# run it
+if __name__ == "__main__":
+    # this triggers the main agent to call the math subagent
+    result = main_agent.run_sync("What is 15 multiplied by 23?")
+    print(f"Answer: {result.output}")
+
+    # some logging helpers
+    print(f"\nUsage: {result.usage()}")
+    print(f"Total requests: {result.usage().requests}")</code></pre>
+
+      <p class="mb-4 leading-relaxed">
+        Here we basically -
+      </p>
+
+      <ul class="list-disc pl-6 mb-6 space-y-2">
+        <li>Import the packages</li>
+        <li>Setup the subagent with a system prompt</li>
+        <li>Wrap that subagent into a tool ( ie a function that returns the run output of the subagent run )</li>
+        <li>Create a new <strong>Main</strong> agent with the tools loaded (subagent as tool)</li>
+        <li>Run it</li>
+      </ul>
+
+      <p class="mb-6 leading-relaxed">
+        Save it, set your <code>OPENAI_API_KEY</code>, and run it.
+      </p>
+
+      <h2 id="real-insight" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">The Real Insight</h2>
+
+      <p class="mb-4 leading-relaxed">
+        At the end of the day, subagents are not some mystical new primitive.
+      </p>
+
+      <p class="mb-4 leading-relaxed">
+        They still are <strong>controlled nested loops for delegation</strong>.
+      </p>
+
+      <p class="mb-4 leading-relaxed">
+        Once you see that, most agent frameworks start looking like the same core pattern with different APIs. The complexity isn't in the concept - it's in deciding:
+      </p>
+
+      <ul class="list-disc pl-6 mb-6 space-y-2">
+        <li>When to delegate</li>
+        <li>What context to pass</li>
+        <li>How to handle the result</li>
+      </ul>
+
+      <p class="mb-6 leading-relaxed">
+        Start simple. One subagent as a tool. Add complexity when you feel the pain, not before.
+      </p>
+
+      <p class="mb-6 leading-relaxed text-lg font-bold text-[var(--primary)]">
+        That's it. That's the pattern.
+      </p>
+
+      <hr class="border-[var(--border)] my-8" />
+
+      <p class="text-sm text-[var(--text-muted)]">
+        Major inspirations and examples for this blog came from the langchain and pydantic docs
+      </p>
+      <p class="text-sm text-[var(--text-muted)] mt-2">
+        I would also suggest you to checkout the official docs for both here -
+        <a href="https://docs.langchain.com/oss/python/langchain/multi-agent/subagents" class="text-[var(--link)] hover:underline">Langchain Subagents</a> and
+        <a href="https://ai.pydantic.dev/multi-agent-applications/" class="text-[var(--link)] hover:underline">Pydantic AI Multi-Agent</a>
+      </p>
+
+      <div class="mt-12 pt-8 border-t border-[var(--border)]">
+        <h3 class="text-lg font-semibold text-[var(--primary)] mb-4">Connect with me</h3>
+        <div class="flex gap-4 text-sm flex-wrap">
+          <a href="https://twitter.com/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Twitter</a>
+          <span class="text-[var(--text-muted)]">/</span>
+          <a href="https://github.com/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Github</a>
+          <span class="text-[var(--text-muted)]">/</span>
+          <a href="https://linkedin.com/in/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">LinkedIn</a>
+          <span class="text-[var(--text-muted)]">/</span>
+          <a href="mailto:parthshar370@gmail.com" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Email</a>
+        </div>
+      </div>
+
+    </article>
+  </body>
+</html>

@@ -56,17 +56,23 @@
 }
 
 [data-theme="orange"] {
-    --bg: #050505; /* Pitch Black */
-    --text: #d1d1d1;
+    --bg: #0a0a0a; /* Near-black charcoal (Ember Night) */
+    --text: #eeeeee;
     --text-muted: #808080;
     --primary: #EC5B2B; /* Orange */
     --secondary: #EE7948;
     --accent: #FFF7F1;
-    --link: #6ba1e6; /* Blue as seen in the image */
+    --link: #6ba1e6; /* Blue */
     --link-hover: #82aaff;
-    --border: #262626;
+    --border: #1e1e1e;
     --bold: #EC5B2B; /* Orange */
-    --italic: #e5c07b;
+    --italic: #e5c07b; /* Warm yellow */
+    --cyan: #56b6c2;
+    --red: #e06c75;
+
+    /* Ember Night palette reference */
+    --ctp-mantle: #060606;
+    --ctp-crust: #000000;
 }
 
 body {
@@ -111,9 +117,34 @@ hr {
     border-color: var(--border) !important;
 }
 
-/* Text Highlights */
-.font-semibold {
-    color: var(--secondary) !important;
+/* Bold & Italic in article content */
+article strong {
+    color: var(--bold) !important;
+    font-weight: bold;
+}
+
+article em {
+    color: var(--italic) !important;
+    font-style: italic;
+}
+
+/* Inline code in articles */
+article :not(pre) > code {
+    background-color: var(--border);
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
+}
+
+/* Highlighted keywords (used for key terms that need to pop) */
+article .hl {
+    color: var(--bold) !important;
+    font-weight: bold;
+}
+
+article .hl-yellow {
+    color: var(--italic) !important;
+    font-style: italic;
 }
 
 /* Code Blocks */
@@ -128,12 +159,21 @@ pre {
 }
 
 [data-theme="orange"] pre {
-    background-color: #121212 !important;
-    border-color: #1a1a1a !important;
+    background-color: #141414 !important;
+    border-color: #1e1e1e !important;
 }
 
 [data-theme="orange"] article {
     background-color: #0a0a0a !important;
+}
+
+/* Orange theme: list markers in orange */
+[data-theme="orange"] article ol li::marker {
+    color: var(--text-muted);
+}
+
+[data-theme="orange"] article ul li::marker {
+    color: var(--text-muted);
 }
 
 code {
