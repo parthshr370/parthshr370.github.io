@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% include head.html %}
+  </head>
+  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10 bg-[var(--bg)] text-[var(--text)]">
+    <nav class="mt-6 flex justify-between items-center">
+      <a href="{{ '/blogs/' | relative_url }}" class="text-sm font-semibold hover:underline text-[var(--primary)]">← Back to Blogs</a>
+      {% include theme-toggle.html %}
+    </nav>
+    
+    <article class="mt-8">
+      <h1 class="text-3xl font-bold mb-2 text-[var(--primary)]">{{ page.title }}</h1>
+      <p class="text-[var(--text-muted)] mb-6">{{ page.date_display }} • {{ page.read_time }}</p>
+
+      {{ content }}
+
+      {% include socials.html %}
+    </article>
+  </body>
+</html>

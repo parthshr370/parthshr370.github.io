@@ -1,228 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Blogs - Parth Sharma</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="shortcut icon" href="../assets/img/favicon.png" type="image/png">
-    <script>
-      // Theme management
-      const theme = localStorage.getItem('theme') || 'orange';
-      document.documentElement.setAttribute('data-theme', theme);
+---
+layout: default
+title: Blogs - Parth Sharma
+nav_title: Blogs
+nav_active: blogs
+permalink: /blogs/
+---
 
-      function updateThemeIcon(currentTheme) {
-        const moonIcon = document.getElementById('moon-icon');
-        const sunIcon = document.getElementById('sun-icon');
-        if (currentTheme === 'orange') {
-          moonIcon?.classList.add('hidden');
-          sunIcon?.classList.remove('hidden');
-        } else {
-          sunIcon?.classList.add('hidden');
-          moonIcon?.classList.remove('hidden');
-        }
-      }
+<section class="mt-8">
+  
+  <!-- Featured Posts -->
+  <div class="space-y-4 mb-12">
 
-      function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'mocha' ? 'orange' : 'mocha';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateThemeIcon(newTheme);
-      }
-
-      window.addEventListener('DOMContentLoaded', () => {
-        updateThemeIcon(document.documentElement.getAttribute('data-theme'));
-      });
-    </script>
-  </head>
-  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10 bg-[var(--bg)] text-[var(--text)]">
-    <nav class="mt-6 pb-4 border-b border-[var(--border)] flex justify-between items-end">
-      <div>
-        <h1 class="font-serif text-4xl font-bold text-[var(--primary)]">Blogs</h1>
-        <div class="mt-5 flex flex-wrap gap-5">
-          <a
-            href="../index.html"
-            class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300"
-            >Home</a
-          >
-          <a
-            href="./index.html"
-            class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300 font-semibold"
-            >Blogs</a
-          >
-          <a
-            href="../projects/index.html"
-            class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300"
-            >Projects</a
-          >
-        </div>
+    <!-- Anatomy of Subagents -->
+    <div class="p-5 rounded-xl border border-[var(--border)] bg-[var(--ctp-mantle)] hover:border-[var(--primary)] transition-all duration-300">
+      <div class="group">
+        <a href="{{ '/blogs/anatomy-of-subagents/' | relative_url }}" class="block">
+          <span class="text-xs font-bold uppercase tracking-widest text-[var(--primary)] opacity-80">Latest Post</span>
+          <h2 class="text-2xl font-bold text-[var(--text)] group-hover:text-[var(--link)] mt-1 transition-colors">Anatomy of Subagents</h2>
+          <p class="text-[var(--text-muted)] mt-2 leading-relaxed">How nested agent runs help you delegate, isolate context, and build cleaner multi-agent systems.</p>
+          <div class="flex items-center gap-4 mt-3 text-sm text-[var(--text-muted)]">
+            <span>March 1, 2026</span>
+            <span class="w-1 h-1 rounded-full bg-[var(--border)]"></span>
+            <span>7 min read</span>
+          </div>
+        </a>
       </div>
-      <button 
-        onclick="toggleTheme()" 
-        class="mb-1 p-2 rounded-lg border border-[var(--border)] text-[var(--primary)] hover:bg-[var(--border)] transition-all duration-300 cursor-pointer flex items-center justify-center"
-        title="Toggle Theme"
-      >
-        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-      </button>
-    </nav>
+    </div>
 
-    <section class="mt-8">
-      
-      <!-- Featured Posts -->
-      <div class="space-y-4 mb-12">
+    <!-- JSON, Marshals and Go -->
+    <div class="p-5 rounded-xl border border-[var(--border)] hover:border-[var(--secondary)] transition-all duration-300">
+      <div class="group">
+        <a href="{{ '/blogs/json-marshals-and-go/' | relative_url }}" class="block">
+          <h2 class="text-2xl font-bold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">JSON, Marshals and Go</h2>
+          <p class="text-[var(--text-muted)] mt-2 leading-relaxed">A deep dive into how Go handles JSON data structures using Marshalling and Structs.</p>
+          <div class="flex items-center gap-4 mt-3 text-sm text-[var(--text-muted)]">
+            <span>January 21, 2026</span>
+            <span class="w-1 h-1 rounded-full bg-[var(--border)]"></span>
+            <span>5 min read</span>
+          </div>
+        </a>
+      </div>
+    </div>
 
-        <!-- Anatomy of Subagents -->
-        <div class="p-5 rounded-xl border border-[var(--border)] bg-[var(--ctp-mantle)] hover:border-[var(--primary)] transition-all duration-300">
-          <div class="group">
-            <a href="./anatomy-of-subagents/" class="block">
-              <span class="text-xs font-bold uppercase tracking-widest text-[var(--primary)] opacity-80">Latest Post</span>
-              <h2 class="text-2xl font-bold text-[var(--text)] group-hover:text-[var(--link)] mt-1 transition-colors">Anatomy of Subagents</h2>
-              <p class="text-[var(--text-muted)] mt-2 leading-relaxed">How nested agent runs help you delegate, isolate context, and build cleaner multi-agent systems.</p>
-              <div class="flex items-center gap-4 mt-3 text-sm text-[var(--text-muted)]">
-                <span>March 1, 2026</span>
-                <span class="w-1 h-1 rounded-full bg-[var(--border)]"></span>
-                <span>7 min read</span>
-              </div>
+  </div>
+
+  <!-- All Posts Section -->
+  <div class="mb-12">
+    <details class="group">
+      <summary class="flex items-center justify-between cursor-pointer list-none p-4 rounded-lg border border-[var(--border)] hover:bg-[var(--border)] transition-all">
+        <span class="text-xl font-bold text-[var(--primary)]">All Posts</span>
+        <span class="transition-transform group-open:rotate-90 text-[var(--primary)] text-xl">></span>
+      </summary>
+    
+      <div class="mt-6 space-y-8 pl-4 border-l-2 border-[var(--border)]">
+        <!-- JSON Marshals and Go (Local) -->
+        <div class="group">
+            <a href="{{ '/blogs/json-marshals-and-go/' | relative_url }}" class="block">
+                <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">JSON, Marshals and Go</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Golang • JSON • Structs</p>
             </a>
-          </div>
         </div>
 
-        <!-- JSON, Marshals and Go -->
-        <div class="p-5 rounded-xl border border-[var(--border)] hover:border-[var(--secondary)] transition-all duration-300">
-          <div class="group">
-            <a href="./json-marshals-and-go/" class="block">
-              <h2 class="text-2xl font-bold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">JSON, Marshals and Go</h2>
-              <p class="text-[var(--text-muted)] mt-2 leading-relaxed">A deep dive into how Go handles JSON data structures using Marshalling and Structs.</p>
-              <div class="flex items-center gap-4 mt-3 text-sm text-[var(--text-muted)]">
-                <span>January 21, 2026</span>
-                <span class="w-1 h-1 rounded-full bg-[var(--border)]"></span>
-                <span>5 min read</span>
-              </div>
+        <!-- Pairing Agents (Local) -->
+        <div class="group">
+            <a href="{{ '/blogs/pairing-agents-with-mcp/' | relative_url }}" class="block">
+                <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Pairing your AI agent with 600+ MCP tools seamlessly</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-1">MCP • Tooling • Camel-AI</p>
             </a>
-          </div>
         </div>
 
-      </div>
+        <!-- Data Shapley -->
+        <div class="group">
+            <a href="https://medium.com/@parthshr370/data-shapley-in-one-training-run-a74c35dfcb4f" target="_blank" class="block">
+                <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Data Shapley in One Training Run</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Data Attribution • LLMs</p>
+            </a>
+        </div>
 
-      <!-- All Posts Section -->
-      <div class="mb-12">
-        <details class="group">
-          <summary class="flex items-center justify-between cursor-pointer list-none p-4 rounded-lg border border-[var(--border)] hover:bg-[var(--border)] transition-all">
-            <span class="text-xl font-bold text-[var(--primary)]">All Posts</span>
-            <span class="transition-transform group-open:rotate-90 text-[var(--primary)] text-xl">></span>
-          </summary>
-        
-          <div class="mt-6 space-y-8 pl-4 border-l-2 border-[var(--border)]">
-            <!-- JSON Marshals and Go (Local) -->
-            <div class="group">
-                <a href="./json-marshals-and-go/" class="block">
-                    <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">JSON, Marshals and Go</h2>
-                    <p class="text-sm text-[var(--text-muted)] mt-1">Golang • JSON • Structs</p>
-                </a>
-            </div>
+        <!-- MCP Communication -->
+        <div class="group">
+            <a href="https://medium.com/@parthshr370/ai-without-borders-making-different-agent-frameworks-collaborate-through-mcp-7644bf5c5d9f" target="_blank" class="block">
+                <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Creating your own Agent to Agent communication with MCP</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Agents • MCP • Protocol</p>
+            </a>
+        </div>
 
-            <!-- Pairing Agents (Local) -->
-            <div class="group">
-                <a href="./pairing-agents-with-mcp/" class="block">
-                    <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Pairing your AI agent with 600+ MCP tools seamlessly</h2>
-                    <p class="text-sm text-[var(--text-muted)] mt-1">MCP • Tooling • Camel-AI</p>
-                </a>
-            </div>
+        <!-- EEG Lab -->
+        <div class="group">
+            <a href="https://medium.com/@parthshr370/your-guide-to-preprocessing-in-eeglab-5f865e538e4c" target="_blank" class="block">
+                <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Your Guide To Preprocessing EEG data in EEGLab</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Neuroscience • Python</p>
+            </a>
+        </div>
 
-            <!-- Data Shapley -->
-            <div class="group">
-                <a href="https://medium.com/@parthshr370/data-shapley-in-one-training-run-a74c35dfcb4f" target="_blank" class="block">
-                    <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Data Shapley in One Training Run</h2>
-                    <p class="text-sm text-[var(--text-muted)] mt-1">Data Attribution • LLMs</p>
-                </a>
-            </div>
+        <!-- Mem0 Architecture -->
+        <div class="group">
+            <a href="https://medium.com/@parthshr370/from-chat-history-to-ai-memory-a-better-way-to-build-intelligent-agents-f30116b0c124" target="_blank" class="block">
+                <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Demystifying the brilliant architecture of mem0</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Memory • Architecture • Agents</p>
+            </a>
+        </div>
 
-            <!-- MCP Communication -->
-            <div class="group">
-                <a href="https://medium.com/@parthshr370/ai-without-borders-making-different-agent-frameworks-collaborate-through-mcp-7644bf5c5d9f" target="_blank" class="block">
-                    <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Creating your own Agent to Agent communication with MCP</h2>
-                    <p class="text-sm text-[var(--text-muted)] mt-1">Agents • MCP • Protocol</p>
-                </a>
-            </div>
+        <!-- Context Engineering -->
+        <div class="group">
+            <a href="https://medium.com/@parthshr370/context-engineering-building-better-ai-worlds-beyond-prompts-71e844bf78c8" target="_blank" class="block">
+                <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Context Engineering: Building Better AI Worlds Beyond Prompts</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Context • Prompt Engineering • AI</p>
+            </a>
+        </div>
 
-            <!-- EEG Lab -->
-            <div class="group">
-                <a href="https://medium.com/@parthshr370/your-guide-to-preprocessing-in-eeglab-5f865e538e4c" target="_blank" class="block">
-                    <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Your Guide To Preprocessing EEG data in EEGLab</h2>
-                    <p class="text-sm text-[var(--text-muted)] mt-1">Neuroscience • Python</p>
-                </a>
-            </div>
+        <!-- Building MCP servers with CAMEL -->
+        <div class="group">
+            <a href="https://medium.com/@parthshr370/building-mcp-servers-with-camel-ai-dbb419b083ad" target="_blank" class="block">
+                <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Building MCP servers with CAMEL AI</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Tutorial • MCP • Python</p>
+            </a>
+        </div>
 
-            <!-- Mem0 Architecture -->
-            <div class="group">
-                <a href="https://medium.com/@parthshr370/from-chat-history-to-ai-memory-a-better-way-to-build-intelligent-agents-f30116b0c124" target="_blank" class="block">
-                    <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Demystifying the brilliant architecture of mem0</h2>
-                    <p class="text-sm text-[var(--text-muted)] mt-1">Memory • Architecture • Agents</p>
-                </a>
-            </div>
+        <!-- Building cool agents -->
+        <div class="group">
+            <a href="https://medium.com/@parthshr370/building-cool-agents-with-camel-ai-1053b502e582" target="_blank" class="block">
+                <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Building cool agents with CAMEL AI</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Agents • Frameworks</p>
+            </a>
+        </div>
 
-            <!-- Context Engineering -->
-            <div class="group">
-                <a href="https://medium.com/@parthshr370/context-engineering-building-better-ai-worlds-beyond-prompts-71e844bf78c8" target="_blank" class="block">
-                    <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Context Engineering: Building Better AI Worlds Beyond Prompts</h2>
-                    <p class="text-sm text-[var(--text-muted)] mt-1">Context • Prompt Engineering • AI</p>
-                </a>
-            </div>
+        <!-- Song Intro -->
+        <div class="group">
+            <a href="https://medium.com/@parthshr370/finding-the-intro-time-of-a-song-using-python-af1a735c3110" target="_blank" class="block">
+                <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Finding the intro time of a song using Python</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Audio Processing • Python</p>
+            </a>
+        </div>
 
-            <!-- Building MCP servers with CAMEL -->
-            <div class="group">
-                <a href="https://medium.com/@parthshr370/building-mcp-servers-with-camel-ai-dbb419b083ad" target="_blank" class="block">
-                    <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Building MCP servers with CAMEL AI</h2>
-                    <p class="text-sm text-[var(--text-muted)] mt-1">Tutorial • MCP • Python</p>
-                </a>
-            </div>
-
-            <!-- Building cool agents -->
-            <div class="group">
-                <a href="https://medium.com/@parthshr370/building-cool-agents-with-camel-ai-1053b502e582" target="_blank" class="block">
-                    <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Building cool agents with CAMEL AI</h2>
-                    <p class="text-sm text-[var(--text-muted)] mt-1">Agents • Frameworks</p>
-                </a>
-            </div>
-
-            <!-- Song Intro -->
-            <div class="group">
-                <a href="https://medium.com/@parthshr370/finding-the-intro-time-of-a-song-using-python-af1a735c3110" target="_blank" class="block">
-                    <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Finding the intro time of a song using Python</h2>
-                    <p class="text-sm text-[var(--text-muted)] mt-1">Audio Processing • Python</p>
-                </a>
-            </div>
-
-            <!-- PM4PY -->
-            <div class="group">
-                <a href="https://medium.com/@parthshr370/how-to-get-started-with-pm4py-abebfa97d899" target="_blank" class="block">
-                    <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">How to Get started with PM4PY</h2>
-                    <p class="text-sm text-[var(--text-muted)] mt-1">Process Mining • Data Science</p>
-                </a>
-            </div>
-          </div>
-        </details>
-      </div>
-
-      <!-- Notes Section - Integrated directly -->
-      <div class="pt-8 border-t border-[var(--border)]">
-        <h2 class="text-2xl font-bold text-[var(--primary)] mb-6">Some notes I made</h2>
-        
-        <div class="p-5 rounded-lg border border-[var(--border)] hover:border-[var(--secondary)] transition-all">
-          <a href="https://github.com/parthshr370/Computer-Science-Notes" target="_blank" class="group block">
-            <h3 class="text-xl font-semibold text-[var(--link)] mb-3 group-hover:underline">Computer Science Notes ↗</h3>
-          </a>
-          <p class="text-[var(--text)] leading-relaxed">
-            A comprehensive knowledge base spanning 3 years of Computer Science and ML research. 
-            I continuously update this with new findings in Process Mining, Deep Learning, and System Design.
-          </p>
+        <!-- PM4PY -->
+        <div class="group">
+            <a href="https://medium.com/@parthshr370/how-to-get-started-with-pm4py-abebfa97d899" target="_blank" class="block">
+                <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">How to Get started with PM4PY</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Process Mining • Data Science</p>
+            </a>
         </div>
       </div>
-      
-    </section>
-  </body>
-</html>
+    </details>
+  </div>
+
+  <!-- Notes Section - Integrated directly -->
+  <div class="pt-8 border-t border-[var(--border)]">
+    <h2 class="text-2xl font-bold text-[var(--primary)] mb-6">Some notes I made</h2>
+    
+    <div class="p-5 rounded-lg border border-[var(--border)] hover:border-[var(--secondary)] transition-all">
+      <a href="https://github.com/parthshr370/Computer-Science-Notes" target="_blank" class="group block">
+        <h3 class="text-xl font-semibold text-[var(--link)] mb-3 group-hover:underline">Computer Science Notes ↗</h3>
+      </a>
+      <p class="text-[var(--text)] leading-relaxed">
+        A comprehensive knowledge base spanning 3 years of Computer Science and ML research. 
+        I continuously update this with new findings in Process Mining, Deep Learning, and System Design.
+      </p>
+    </div>
+  </div>
+  
+</section>

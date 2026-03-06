@@ -1,177 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Parth Sharma</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <link rel="stylesheet" href="./assets/css/style.css">
-    <link rel="shortcut icon" href="./assets/img/favicon.png" type="image/png">
-    <script>
-      // Theme management
-      const theme = localStorage.getItem('theme') || 'orange';
-      document.documentElement.setAttribute('data-theme', theme);
+---
+layout: default
+title: Parth Sharma
+nav_title: Parth Sharma
+nav_active: home
+permalink: /
+---
 
-      function updateThemeIcon(currentTheme) {
-        const moonIcon = document.getElementById('moon-icon');
-        const sunIcon = document.getElementById('sun-icon');
-        if (currentTheme === 'orange') {
-          moonIcon?.classList.add('hidden');
-          sunIcon?.classList.remove('hidden');
-        } else {
-          sunIcon?.classList.add('hidden');
-          moonIcon?.classList.remove('hidden');
-        }
-      }
+<!-- Intro -->
+<section class="space-y-6 mt-8">
+  <div>
+    <p class="text-[var(--text)] leading-relaxed">
+      <span class="text-[var(--link)] font-bold">Hi, I'm</span> <span class="text-[var(--accent)] font-bold">Parth.</span> I love working with agentic frameworks, their tooling, and hacking around how systems work. Previously worked at <strong>Mem0 (YC S24)</strong>. Currently learning <strong>Golang</strong> and building agents.
+    </p>
+  </div>
 
-      function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'mocha' ? 'orange' : 'mocha';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateThemeIcon(newTheme);
-      }
+  <!-- Previously -->
+  <div>
+    <h3 class="text-lg font-bold text-[var(--primary)] mb-2">Work Experience</h3>
+    <ul class="space-y-1 text-[var(--text-muted)]">
+      <li>• <a href="https://www.flashlabs.ai/" class="hover:text-[var(--secondary)]">Flashlabs AI</a></li>
+      <li>• <a href="https://mem0.ai/" class="hover:text-[var(--secondary)]">Mem0 (YC S24)</a></li>
+      <li>• <a href="https://www.camel-ai.org/" class="hover:text-[var(--secondary)]">Camel AI</a></li>
+      <li>• <a href="https://www.aci.dev/" class="hover:text-[var(--secondary)]">AIPOLABS (aci.dev)</a></li>
+      <li>• <a href="https://www.esds.co.in/" class="hover:text-[var(--secondary)]">ESDS</a></li>
+      <li>• IIIT Allahabad (Research on process mining)</li>
+    </ul>
+  </div>
 
-      window.addEventListener('DOMContentLoaded', () => {
-        updateThemeIcon(document.documentElement.getAttribute('data-theme'));
-      });
-    </script>
-  </head>
-  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10 bg-[var(--bg)] text-[var(--text)]">
-    <!-- Nav -->
-    <nav class="mt-6 pb-4 border-b border-[var(--border)] flex justify-between items-end">
+  <hr class="border-[var(--border)] my-8" />
+
+  <!-- Projects -->
+  <div class="p-6 rounded-lg border border-[var(--border)]">
+    <h2 class="text-2xl font-bold text-[var(--primary)] mb-6">Projects</h2>
+    
+    <div class="space-y-6">
+      <!-- Go Agent SDK -->
       <div>
-        <h1 class="font-serif text-4xl font-bold text-[var(--primary)]">Parth Sharma</h1>
-        <div class="mt-5 flex flex-wrap gap-5">
-          <a
-            href="index.html"
-            class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300 font-semibold"
-            >Home</a
-          >
-          <a
-            href="./blogs/index.html"
-            class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300"
-            >Blogs</a
-          >
-          <a
-            href="./projects/index.html"
-            class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300"
-            >Projects</a
-          >
-        </div>
-      </div>
-      <button 
-        onclick="toggleTheme()" 
-        class="mb-1 p-2 rounded-lg border border-[var(--border)] text-[var(--primary)] hover:bg-[var(--border)] transition-all duration-300 cursor-pointer flex items-center justify-center"
-        title="Toggle Theme"
-      >
-        <!-- Moon Icon (Mocha) -->
-        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-        <!-- Sun Icon (Orange) -->
-        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-      </button>
-    </nav>
-
-    <!-- Intro -->
-    <section class="space-y-6 mt-8">
-      <div>
-        <p class="text-[var(--text)] leading-relaxed">
-          <span class="text-[var(--link)] font-bold">Hi, I'm</span> <span class="text-[var(--accent)] font-bold">Parth.</span> I love working with agentic frameworks, their tooling, and hacking around how systems work. Previously worked at <strong>Mem0 (YC S24)</strong>. Currently learning <strong>Golang</strong> and building agents.
+        <a href="https://github.com/parthshr370/Go-agent-SDK" target="_blank" class="group block text-[var(--link)]">
+          <h3 class="text-xl font-bold mb-1 flex items-center gap-2 group-hover:underline">
+            <span>Go Agent SDK ↗</span>
+            <span class="text-sm text-[var(--secondary)] font-normal">⭐ Featured</span>
+          </h3>
+        </a>
+        <p class="text-[var(--text)]">
+          A comprehensive Golang SDK for building intelligent agents with tool-calling capabilities and memory management. Currently in active development. Built with modern Go patterns and optimized for performance.
         </p>
       </div>
 
-      <!-- Previously -->
+      <!-- Simpletex -->
       <div>
-        <h3 class="text-lg font-bold text-[var(--primary)] mb-2">Work Experience</h3>
-        <ul class="space-y-1 text-[var(--text-muted)]">
-          <li>• <a href="https://www.flashlabs.ai/" class="hover:text-[var(--secondary)]">Flashlabs AI</a></li>
-          <li>• <a href="https://mem0.ai/" class="hover:text-[var(--secondary)]">Mem0 (YC S24)</a></li>
-          <li>• <a href="https://www.camel-ai.org/" class="hover:text-[var(--secondary)]">Camel AI</a></li>
-          <li>• <a href="https://www.aci.dev/" class="hover:text-[var(--secondary)]">AIPOLABS (aci.dev)</a></li>
-          <li>• <a href="https://www.esds.co.in/" class="hover:text-[var(--secondary)]">ESDS</a></li>
-          <li>• IIIT Allahabad (Research on process mining)</li>
-        </ul>
+        <a href="https://simpletex.xyz" class="group block text-[var(--link)]">
+          <h3 class="text-xl font-bold mb-1 group-hover:underline">Simpletex.xyz ↗</h3>
+        </a>
+        <p class="text-[var(--text)]">
+          LaTeX Resume Platform - Build professional resumes effortlessly with LaTeX.
+        </p>
       </div>
 
-      <hr class="border-[var(--border)] my-8" />
-
-      <!-- Projects -->
-      <div class="p-6 rounded-lg border border-[var(--border)]">
-        <h2 class="text-2xl font-bold text-[var(--primary)] mb-6">Projects</h2>
-        
-        <div class="space-y-6">
-          <!-- Go Agent SDK -->
-          <div>
-            <a href="https://github.com/parthshr370/Go-agent-SDK" target="_blank" class="group block text-[var(--link)]">
-              <h3 class="text-xl font-bold mb-1 flex items-center gap-2 group-hover:underline">
-                <span>Go Agent SDK ↗</span>
-                <span class="text-sm text-[var(--secondary)] font-normal">⭐ Featured</span>
-              </h3>
-            </a>
-            <p class="text-[var(--text)]">
-              A comprehensive Golang SDK for building intelligent agents with tool-calling capabilities and memory management. Currently in active development. Built with modern Go patterns and optimized for performance.
-            </p>
-          </div>
-
-          <!-- Simpletex -->
-          <div>
-            <a href="https://simpletex.xyz" class="group block text-[var(--link)]">
-              <h3 class="text-xl font-bold mb-1 group-hover:underline">Simpletex.xyz ↗</h3>
-            </a>
-            <p class="text-[var(--text)]">
-              LaTeX Resume Platform - Build professional resumes effortlessly with LaTeX.
-            </p>
-          </div>
-
-          <!-- Camel-AI -->
-          <div>
-            <a href="https://github.com/camel-ai/camel" target="_blank" class="block group text-[var(--link)]">
-              <h3 class="text-xl font-bold mb-1 group-hover:underline">Camel-AI ↗</h3>
-            </a>
-            <p class="text-[var(--text-muted)]">
-              Core contributor focused on MCPToolkit, toolkits, and other features. Regular contributions to the main product with cookbooks, features, etc.
-            </p>
-          </div>
-
-          <!-- Mem0 MCP -->
-          <div>
-            <a href="https://github.com/mem0ai/mem0-mcp" target="_blank" class="block group text-[var(--link)]">
-              <h3 class="text-xl font-bold mb-1 group-hover:underline">mem0-mcp ↗</h3>
-            </a>
-            <p class="text-[var(--text-muted)] mb-2">
-              Revamped mem0-mcp for the new API v2, enabling complex filters and expanding LLM tool-calling capabilities.
-            </p>
-            <p class="text-[var(--text-muted)] text-sm">
-              Now compatible as a Python package, Docker endpoint, and Smithery.
-            </p>
-          </div>
-
-          <!-- Memory Deep Researcher -->
-          <div>
-            <a href="https://github.com/parthshr370/Mem0-Deep-Researcher" class="group block text-[var(--link)]">
-              <h3 class="text-xl font-bold mb-1 group-hover:underline">Memory Deep Researcher ↗</h3>
-            </a>
-            <p class="text-[var(--text)]">
-              Deep research agent for your memory database.
-            </p>
-          </div>
-        </div>
+      <!-- Camel-AI -->
+      <div>
+        <a href="https://github.com/camel-ai/camel" target="_blank" class="block group text-[var(--link)]">
+          <h3 class="text-xl font-bold mb-1 group-hover:underline">Camel-AI ↗</h3>
+        </a>
+        <p class="text-[var(--text-muted)]">
+          Core contributor focused on MCPToolkit, toolkits, and other features. Regular contributions to the main product with cookbooks, features, etc.
+        </p>
       </div>
 
-      <hr class="border-[var(--border)] my-8" />
-
-      <!-- Socials -->
-      <div class="flex gap-4 text-sm">
-        <a href="https://twitter.com/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Twitter</a>
-        <span class="text-[var(--text-muted)]">/</span>
-        <a href="https://github.com/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Github</a>
-        <span class="text-[var(--text-muted)]">/</span>
-        <a href="https://linkedin.com/in/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">LinkedIn</a>
-        <span class="text-[var(--text-muted)]">/</span>
-        <a href="mailto:parthshar370@gmail.com" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Email</a>
+      <!-- Mem0 MCP -->
+      <div>
+        <a href="https://github.com/mem0ai/mem0-mcp" target="_blank" class="block group text-[var(--link)]">
+          <h3 class="text-xl font-bold mb-1 group-hover:underline">mem0-mcp ↗</h3>
+        </a>
+        <p class="text-[var(--text-muted)] mb-2">
+          Revamped mem0-mcp for the new API v2, enabling complex filters and expanding LLM tool-calling capabilities.
+        </p>
+        <p class="text-[var(--text-muted)] text-sm">
+          Now compatible as a Python package, Docker endpoint, and Smithery.
+        </p>
       </div>
 
-    </section>
-  </body>
-</html>
+      <!-- Memory Deep Researcher -->
+      <div>
+        <a href="https://github.com/parthshr370/Mem0-Deep-Researcher" class="group block text-[var(--link)]">
+          <h3 class="text-xl font-bold mb-1 group-hover:underline">Memory Deep Researcher ↗</h3>
+        </a>
+        <p class="text-[var(--text)]">
+          Deep research agent for your memory database.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="border-[var(--border)] my-8" />
+
+  <!-- Socials -->
+  <div class="flex gap-4 text-sm">
+    <a href="https://twitter.com/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Twitter</a>
+    <span class="text-[var(--text-muted)]">/</span>
+    <a href="https://github.com/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Github</a>
+    <span class="text-[var(--text-muted)]">/</span>
+    <a href="https://linkedin.com/in/parthshr370" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">LinkedIn</a>
+    <span class="text-[var(--text-muted)]">/</span>
+    <a href="mailto:parthshar370@gmail.com" class="text-[var(--accent)] hover:text-[var(--secondary)] hover:underline">Email</a>
+  </div>
+
+</section>

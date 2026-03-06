@@ -1,0 +1,23 @@
+<nav class="mt-6 pb-4 border-b border-[var(--border)] flex justify-between items-end">
+  <div>
+    <h1 class="font-serif text-4xl font-bold text-[var(--primary)]">{{ page.nav_title | default: site.title }}</h1>
+    <div class="mt-5 flex flex-wrap gap-5">
+      <a
+        href="{{ '/' | relative_url }}"
+        class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300{% if page.nav_active == 'home' %} font-semibold{% endif %}"
+        >Home</a
+      >
+      <a
+        href="{{ '/blogs/' | relative_url }}"
+        class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300{% if page.nav_active == 'blogs' %} font-semibold{% endif %}"
+        >Blogs</a
+      >
+      <a
+        href="{{ '/projects/' | relative_url }}"
+        class="relative text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300{% if page.nav_active == 'projects' %} font-semibold{% endif %}"
+        >Projects</a
+      >
+    </div>
+  </div>
+  {% include theme-toggle.html %}
+</nav>

@@ -1,0 +1,26 @@
+title: Parth Sharma
+url: "https://parthshr370.github.io"
+baseurl: ""
+
+# Build settings
+markdown: kramdown
+permalink: pretty
+
+# Exclude from build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - COLORSCHEME.md
+  - ORANGE_THEME.md
+  - excalidraw.log
+  - node_modules
+  - vendor
+
+# Collections for blog posts (using pages instead of _posts for URL control)
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
