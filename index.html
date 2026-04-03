@@ -10,7 +10,7 @@ permalink: /
 <section class="space-y-6 mt-8">
   <div>
     <p class="text-[var(--text)] leading-relaxed">
-      <span class="text-[var(--link)] font-bold">Hi, I'm</span> <span class="text-[var(--accent)] font-bold">Parth.</span> I love working with agentic frameworks, their tooling, and hacking around how systems work. Previously worked at <strong>Mem0 (YC S24)</strong>. Currently learning <strong>Golang</strong> and building agents.
+      Hi, I am <span class="text-[var(--bold)] font-bold italic">Parth</span>. I love working with agentic frameworks, their tooling, and hacking around how systems work. Previously worked at <strong>Mem0 (YC S24)</strong>. Currently learning <strong>Golang</strong> and building agents.
     </p>
   </div>
 
@@ -29,10 +29,20 @@ permalink: /
 
   <hr class="border-[var(--border)] my-8" />
 
+  <!-- Blogs -->
+  <div>
+    <h3 class="text-lg font-bold text-[var(--primary)] mb-2">Writing</h3>
+    <p class="text-[var(--text-muted)]">
+      I write a lot of <a href="{{ '/blogs/' | relative_url }}" class="text-[var(--link)] hover:text-[var(--link-hover)]">technical blogs</a>, recent ones being - internals of <a href="{{ '/blogs/json-marshals-and-go/' | relative_url }}" class="text-[var(--link)] hover:text-[var(--link-hover)]">JSON marshaling in Go</a> and the anatomy of <a href="{{ '/blogs/anatomy-of-subagents/' | relative_url }}" class="text-[var(--link)] hover:text-[var(--link-hover)]">subagents</a>.
+    </p>
+  </div>
+
+  <hr class="border-[var(--border)] my-8" />
+
   <!-- Projects -->
   <div class="p-6 rounded-lg border border-[var(--border)]">
     <h2 class="text-2xl font-bold text-[var(--primary)] mb-6">Projects</h2>
-    
+
     <div class="space-y-6">
       <!-- Go Agent SDK -->
       <div>
@@ -49,11 +59,21 @@ permalink: /
 
       <!-- Simpletex -->
       <div>
-        <a href="https://simpletex.xyz" class="group block text-[var(--link)]">
+        <a href="https://simpletex.xyz" target="_blank" class="group block text-[var(--link)]">
           <h3 class="text-xl font-bold mb-1 group-hover:underline">Simpletex.xyz ↗</h3>
         </a>
         <p class="text-[var(--text)]">
-          LaTeX Resume Platform - Build professional resumes effortlessly with LaTeX.
+          LaTeX Resume Platform - Build professional resumes effortlessly with LaTeX. A streamlined platform for creating LaTeX resumes via form-filling or upload.
+        </p>
+      </div>
+
+      <!-- Memory Deep Researcher -->
+      <div>
+        <a href="https://github.com/parthshr370/Mem0-Deep-Researcher" target="_blank" class="group block text-[var(--link)]">
+          <h3 class="text-xl font-bold mb-1 group-hover:underline">Memory Deep Researcher ↗</h3>
+        </a>
+        <p class="text-[var(--text)]">
+          Deep research agent for memory databases. Uses competing agents to extract facts for the mem0 database and implements a ReWOO + ReAct loop.
         </p>
       </div>
 
@@ -61,6 +81,7 @@ permalink: /
       <div>
         <a href="https://github.com/camel-ai/camel" target="_blank" class="block group text-[var(--link)]">
           <h3 class="text-xl font-bold mb-1 group-hover:underline">Camel-AI ↗</h3>
+          <p class="text-xs text-[var(--accent)] font-semibold">Contribution</p>
         </a>
         <p class="text-[var(--text-muted)]">
           Core contributor focused on MCPToolkit, toolkits, and other features. Regular contributions to the main product with cookbooks, features, etc.
@@ -71,6 +92,7 @@ permalink: /
       <div>
         <a href="https://github.com/mem0ai/mem0-mcp" target="_blank" class="block group text-[var(--link)]">
           <h3 class="text-xl font-bold mb-1 group-hover:underline">mem0-mcp ↗</h3>
+          <p class="text-xs text-[var(--accent)] font-semibold mb-1">Contribution</p>
         </a>
         <p class="text-[var(--text-muted)] mb-2">
           Revamped mem0-mcp for the new API v2, enabling complex filters and expanding LLM tool-calling capabilities.
@@ -80,13 +102,14 @@ permalink: /
         </p>
       </div>
 
-      <!-- Memory Deep Researcher -->
+      <!-- Mem0 -->
       <div>
-        <a href="https://github.com/parthshr370/Mem0-Deep-Researcher" class="group block text-[var(--link)]">
-          <h3 class="text-xl font-bold mb-1 group-hover:underline">Memory Deep Researcher ↗</h3>
+        <a href="https://github.com/mem0ai/mem0" target="_blank" class="block group text-[var(--link)]">
+          <h3 class="text-xl font-bold mb-1 group-hover:underline">mem0 ↗</h3>
+          <p class="text-xs text-[var(--accent)] font-semibold">Contribution</p>
         </a>
-        <p class="text-[var(--text)]">
-          Deep research agent for your memory database.
+        <p class="text-[var(--text-muted)]">
+          Self-improving memory for AI agents.
         </p>
       </div>
     </div>
