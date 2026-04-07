@@ -1,0 +1,344 @@
+---
+layout: post
+title: "How I built my own Langchain from scratch in Go (Agent SDK)"
+date_display: "April 8, 2026"
+read_time: "6 min read"
+permalink: /blogs/how-i-built-my-own-langchain-from-scratch-in-go/
+prism:
+  - go
+  - json
+---
+
+<p class="mb-6 text-sm text-[var(--text-muted)]">
+  Agent SDK series - Part 1
+</p>
+
+<!-- Banner -->
+<img src="{{ '/blogs/how-i-built-my-own-langchain-from-scratch-in-go/AnticStore-Large-Ref-99389_06.jpg' | relative_url }}" alt="How I built my own Langchain from scratch in Go - Agent SDK" class="w-full rounded-xl mb-8 border border-[var(--border)]" />
+
+<p class="mb-6 text-sm text-[var(--text-muted)]">
+  <strong>Prerequisites:</strong> Basic understanding of APIs, JSON, and Go structs. Rest will be taken care of :)
+</p>
+
+<!-- Table of Contents -->
+<div class="mb-10">
+  <h2 class="text-xl font-bold mb-4 text-[var(--primary)]">Table of contents</h2>
+  <details open class="group border border-[var(--border)] rounded-lg p-3 bg-[var(--bg)]">
+    <summary class="cursor-pointer list-none flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+      <span class="transition-transform group-open:rotate-90">></span>
+      <span>Table of contents</span>
+    </summary>
+    <ul class="mt-4 space-y-2 pl-6 border-l border-[var(--border)] text-sm">
+      <li><a href="#starting-point" class="hover:underline text-[var(--link)]">Starting point - Defining the structs</a></li>
+      <li><a href="#messaging-infra" class="hover:underline text-[var(--link)]">The carrier pigeons in the nest - Messaging infra</a></li>
+      <li><a href="#history" class="hover:underline text-[var(--link)]">History</a></li>
+      <li><a href="#bookend" class="hover:underline text-[var(--link)]">Bookend</a></li>
+    </ul>
+  </details>
+</div>
+
+<p class="mb-6 leading-relaxed">
+  Every agent framework you see is a wrapper around API calls, essentially a humongous for loop of multiple API calls and functions.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Any agent framework can be defined as an abstraction of four fundamentals:
+</p>
+
+<ul class="list-disc pl-6 mb-6 space-y-2">
+  <li><strong>API structs</strong></li>
+  <li><strong>Messages</strong></li>
+  <li><strong>History</strong></li>
+  <li><strong>Tools</strong></li>
+</ul>
+
+<p class="mb-6 leading-relaxed">
+  While these principles have been coded and tested to death in Python's environment, I thought it would be an interesting challenge to code them in Golang and that is the reason why I started writing my own from scratch.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  This lets me learn from first principles, play and tweak the API down to the smallest parameter, grow myself learning Golang the non-traditional way, and on the way I hope to make an agent framework meant to be concurrent-friendly and lightweight.
+</p>
+
+<img src="{{ '/blogs/how-i-built-my-own-langchain-from-scratch-in-go/go-agent-sdk-part1-flow.excalidraw.png' | relative_url }}" alt="Go Agent SDK Part 1 - Structs, Messages, and History flow" class="w-full rounded-xl mb-6 border border-[var(--border)]" />
+
+<p class="mb-6 leading-relaxed">
+  This blog will cover my learning, my thought process I had while building this and in general my building states. This first part covers the backbone, the <strong>structs</strong> that hold our data, the <strong>messaging infrastructure</strong>, and how we maintain <strong>history</strong> across turns. <strong>Tool calling</strong> deserves its own deep dive, which is what part two is about.
+</p>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  You can take a look at the code here - <a href="https://github.com/parthshr370/Go-Agent-sdk" class="text-[var(--link)] hover:underline">github.com/parthshr370/Go-Agent-sdk</a>
+</p>
+
+<h2 id="starting-point" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Starting point - Defining the structs</h2>
+
+<p class="mb-6 leading-relaxed">
+  Essentially to access any Language model we trigger an API, that API returns certain information and that information is the heart of our entire system. That heart comes to us in a pre-organised state (the API schema) which we trigger to get our response.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  When building the very first version of this SDK, the first thought that struck me was handling the data structures/API schema.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  The general idea is that each LLM is accessed through a very detailed API, something that can look like:
+</p>
+
+<pre><code class="language-json">{
+  "id": "chatcmpl-123",
+  "object": "chat.completion",
+  "created": 1677652288,
+  "model": "gpt-4",
+  "system_fingerprint": "fp_44709d6fcb",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_abc123",
+            "type": "function",
+            "function": {
+              "name": "get_weather",
+              "arguments": "{\"city\": \"Paris\"}"
+            }
+          }
+        ],
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 82,
+    "completion_tokens": 32,
+    "total_tokens": 114
+  }
+}</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  This tells us to accommodate all the parameters in the JSON response of the API into something Golang can understand. If we nail this, then our entry point becomes <em>Go native instantly</em>, and then building the harness that has all its incoming stream in Go native types.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  While everything in Python can be written with JSON and baseclasses, Go does not have the concept of classes/Objects per se, rather they use something called <strong>structs</strong> here.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  The idea is that we pre-write the expected structures of the whole API lifecycle in a data structure that Go understands. We know what to expect, pre-build the schema in advance, and then make sure all the data that we receive is recorded in these data structures and all the data structures we return is converted back to the JSON that the API understands.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  In order to convert JSON to struct and struct to JSON we use something called <strong>marshalling</strong>.
+</p>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  <strong>Side note:</strong> if you wanna learn about how marshalling works in Go you can take a look at <a href="{{ '/blogs/json-marshals-and-go/' | relative_url }}" class="text-[var(--link)] hover:underline">this blog</a>, but to cut it short, the basic idea is to convert JSON to a format that Go can understand (<em>unmarshalling</em>) and then back from structs to JSON for external systems to understand (<em>marshalling</em>). This is the bridge that makes our structs and the API talk to each other, every request we send gets marshalled out of our structs, and every response we get back gets unmarshalled into them.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  One example struct we can take a look at is:
+</p>
+
+<pre><code class="language-go">type ChatRequest struct {
+	Model    string    `json:"model"`
+	Messages []Message `json:"messages"`
+
+	Temperature      float64         `json:"temperature,omitempty"`
+	TopP             float64         `json:"top_p,omitempty"`
+	Stream           bool            `json:"stream,omitempty"`
+	MaxTokens        int             `json:"max_tokens,omitempty"`
+	PresencePenalty  float64         `json:"presence_penalty,omitempty"`
+	FrequencyPenalty float64         `json:"frequency_penalty,omitempty"`
+	Tools            []Tool          `json:"tools,omitempty"`
+	ToolChoice       interface{}     `json:"tool_choice,omitempty"`
+}</code></pre>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  I trimmed the full struct down a bit, you get the idea. Required fields at the top, optional ones below with <code>omitempty</code>, tool config at the bottom.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  This schema follows OpenAI standards for now (most compatible).
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Once the request structures are taken care of, we do this for all possible formats we can receive the data in (<strong>message</strong>, <strong>tool</strong>, <strong>toolcall</strong>, <strong>response</strong>) and define them in the types.go file.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  The most important one of those is the <strong>Message struct</strong>, because that is what everything flows through:
+</p>
+
+<pre><code class="language-go">type Message struct {
+	Role       string     `json:"role"`
+	Content    string     `json:"content"`
+	Name       string     `json:"name,omitempty"`
+	ToolCalls  []ToolCall `json:"tool_calls,omitempty"`
+	ToolCallID string     `json:"tool_call_id,omitempty"`
+}</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  Look at the fields here. <code>Role</code> and <code>Content</code> cover normal conversations. <code>ToolCalls</code> only shows up when the assistant wants to call a tool. <code>ToolCallID</code> only shows up when we are sending a tool result back. The struct holds <em>every shape a message can take</em>, and the <code>omitempty</code> tags make sure we only send what the API expects for that particular role.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Now we take care of the messaging architecture.
+</p>
+
+<h2 id="messaging-infra" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">The carrier pigeons in the nest - Messaging infra</h2>
+
+<p class="mb-6 leading-relaxed">
+  When we create such elegant structs for our agents to deal with, we create a problem for ourselves doing so. While on the surface the idea of a conversation is as simple as <em>text in</em> and <em>text out</em>, beneath the surface the API still needs to follow a strict schema.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  The messages for each situation we encounter need to be in a format that the API understands. To tackle this, I created <strong>builder functions</strong> that would return me the exact schema for my particular turn of event.
+</p>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  <strong>Side note:</strong> builder functions are a pattern where instead of constructing a struct manually every time (and risking a wrong role or a missing field), you wrap it in a function that does it for you. Call <code>NewUserMessage("hello")</code> and you get a properly shaped <code>Message</code> back, no chance of accidentally setting the role to "usr" or forgetting the content field.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  In essence our schemas need to follow a pattern which can go like:
+</p>
+
+<pre><code class="language-json">{
+  "role": "user/assistant/system",
+  "content": "the content associated with the respective entity here"
+}</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  The idea is to give the key (the entity at the current turn) the value (can be a string or something associated with that key) it deserves in a schema, to make sure our API accepts and understands who is the one sending the message.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  We can have our builder functions for <strong>user</strong>, <strong>assistant</strong>, and <strong>system</strong> messages look something like this:
+</p>
+
+<pre><code class="language-go">func NewSystemMessage(content string) Message {
+	return Message{
+		Role:    "system",
+		Content: content,
+	}
+}
+
+func NewUserMessage(content string) Message {
+	return Message{
+		Role:    "user",
+		Content: content,
+	}
+}
+
+func NewAssistantMessage(content string) Message {
+	return Message{
+		Role:    "assistant",
+		Content: content,
+	}
+}</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  Once the essentials are taken care of (user, assistant, and system), we have one more message type which we need to take care of, ie <strong>tool calls</strong>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  For now we can just think of tool calls as functions that your LLM API can call on your local system. Since they are really important to the overall way we design these agent SDKs, their messages need different fields than the basic ones above. We will not go deep into how tool calls get registered or executed here (that is part two), but we still need to understand how their messages are shaped because history depends on it.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  When the LLM decides to call a tool, it sends a special assistant message containing the tool call details (not a content string, but a <code>ToolCalls</code> array). The result from executing that tool comes back as a tool message with a <code>ToolCallID</code> that links it back to the original call. If execution fails, we surface that error directly, <em>failure context is more useful to the LLM than a generic success signal</em> so it can adjust its next attempt.
+</p>
+
+<pre><code class="language-go">func NewToolCallMessage(calls []ToolCall) Message {
+	return Message{
+		Role:      "assistant",
+		ToolCalls: calls,
+	}
+}
+
+func NewToolResult(toolCallID string, name string, output string) Message {
+	return Message{
+		Role:       "tool",
+		ToolCallID: toolCallID,
+		Name:       name,
+		Content:    output,
+	}
+}
+
+func NewToolError(toolCallID string, name string, err error) Message {
+	return Message{
+		Role:       "tool",
+		ToolCallID: toolCallID,
+		Name:       name,
+		Content:    fmt.Sprintf("Error executing tool: %v. Please fix your arguments.", err),
+	}
+}</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  Notice how <code>NewToolResult</code> and <code>NewToolError</code> both carry a <code>toolCallID</code>. That is the linkage. The API needs to know which tool result corresponds to which tool call, and that ID is the thread between them.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Now that we know how messages are built, we focus on a paradigm that is formed by collecting messages in the right order, ie the <strong>agent history</strong>.
+</p>
+
+<h2 id="history" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">History</h2>
+
+<p class="mb-6 leading-relaxed">
+  While building these agent systems, one thing that is really important is the retention of information we pass on to the agent and the user at each step.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <strong>History</strong> is essentially an array of messages we created that hold the information about the user, the system, the assistant, and tool results. They tell the story of the lineage of things that have been said across the conversation.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Imagine it something like this:
+</p>
+
+<pre><code>[]Message{}
+
+Turn 1: append(system message: "You are a helpful assistant")
+Turn 2: append(user message: "hello how are you")
+Turn 3: append(assistant message: "hello I am great how can I help you")
+Turn 4: append(tool call message: get_weather with {city: "Paris"})
+Turn 5: append(tool result: "Sunny, 22C")</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  The idea is just to append to this array whenever a turn happens (agent speaks, user speaks, agent prompts a tool call, or a tool result comes back).
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Conversations start by building out this array and appending till the conversation stops. Every tool call, every message gets recorded by the framework and gets sent back to the API in each turn.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  And this cycle continues. The agent sends the full history array to the LLM on every single request. That is how the LLM knows what happened before, <em>the history is the memory</em>.
+</p>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  <strong>Side note:</strong> you might be wondering, who orchestrates all of this? Who takes the user message, appends it to history, sends it to the API, checks if the response is a tool call or a final answer, and loops accordingly? That is the <code>Run()</code> function. It is the conductor that makes structs, messages, and history work together as a single loop. We will see it in action once we have all the pieces, including tool calling, in part two.
+</p>
+
+<h2 id="bookend" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Bookend</h2>
+
+<p class="mb-6 leading-relaxed">
+  So far we have built the skeleton <strong>structs</strong> that map to the API, <strong>message builders</strong> that create the right schema for each turn, and a <strong>history array</strong> that records everything said. Marshalling bridges the gap between our Go types and the JSON the API speaks. Builder functions make sure every message is shaped correctly. History makes sure nothing is forgotten across turns.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  But an agent that just talks in circles is not very useful. The next piece is what makes it actually do things in our systems, <strong>tool calling</strong>. How does a Go function become something the LLM knows about? How does the LLM trigger it? How do we bridge the gap between JSON arguments and actual Go code? And how does the <code>Run()</code> loop tie it all together? That is what part two is about.
+</p>
+
+<hr class="border-[var(--border)] my-8" />
+
+<p class="text-sm text-[var(--text-muted)]">
+  You can check out the full code and follow along here - <a href="https://github.com/parthshr370/Go-Agent-sdk" class="text-[var(--link)] hover:underline">github.com/parthshr370/Go-Agent-sdk</a>
+</p>
+<p class="text-sm text-[var(--text-muted)] mt-2">
+  Major inspiration for the struct design came from the <a href="https://platform.openai.com/docs/api-reference/chat" class="text-[var(--link)] hover:underline">OpenAI Chat API documentation</a> and the <a href="https://pkg.go.dev/encoding/json" class="text-[var(--link)] hover:underline">Go encoding/json package</a>.
+</p>
