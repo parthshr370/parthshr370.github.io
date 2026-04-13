@@ -3,6 +3,13 @@
 ## Overview
 Personal portfolio and blog site built with Jekyll 4.4, Tailwind CSS (browser CDN v4), and custom theme support. Focuses on AI/agents, Golang, and personal projects with two themed color schemes.
 
+## Repo Skill
+
+Repo-local skill for site-building final markdown blogs:
+- `skills/blog-site-build/SKILL.md`
+
+Use this when the writing is already done and the task is to mould that final markdown into a website post while preserving emphasis, code treatment, diagrams, and the site's visual language.
+
 ## Development Commands
 
 ### Local Development
@@ -36,9 +43,11 @@ This is a static site with no automated tests. Verify changes by:
 ├── index.html             # Homepage with intro, projects, socials
 ├── blogs/
 │   ├── index.html         # Blog listing page (featured + all posts + notes section)
-│   ├── json-marshals-and-go/index.html  # Local blog post
-│   ├── anatomy-of-subagents/index.html  # Local blog post
-│   └── pairing-agents-with-mcp/index.html  # Local blog post
+│   ├── how-i-built-tool-calling-engine-for-my-agent-sdk/  # Agent SDK Blog 2
+│   ├── how-i-built-my-own-langchain-from-scratch-in-go/   # Agent SDK Blog 1
+│   ├── anatomy-of-subagents/index.html
+│   ├── json-marshals-and-go/index.html
+│   └── pairing-agents-with-mcp/index.html
 ├── projects/
 │   └── index.html         # Projects page (open source + personal projects)
 ├── _layouts/
@@ -87,12 +96,18 @@ Add entries in both `index.html` (Projects section) and `projects/index.html`:
 
 ### HTML/Tailwind Classes
 - Always use CSS variables for colors: `text-[var(--text)]`, `bg-[var(--bg)]`, `border-[var(--border)]`
-- Available variables: `--bg`, `--text`, `--text-muted`, `--primary`, `--secondary`, `--accent`, `--link`, `--link-hover` (see COLORSCHEME.md)
+- Core variables: `--bg`, `--text`, `--text-muted`, `--primary`, `--secondary`, `--accent`, `--link`, `--link-hover`, `--border`, `--bold`, `--italic`, `--surface`
+- Extended palette: `--cyan`, `--red`, `--gold`, `--cream`, `--peach`, `--muted-code`
+- Code variables: `--code-inline-text`, `--code-inline-bg`, `--code-inline-border`, `--code-block-bg`, `--code-block-border`, `--code-keyword`, `--code-property`, `--code-string`, `--code-function`, `--code-number`, `--code-punctuation`
+- Never use `--ctp-*` variables in HTML — those are internal CSS definitions only
+- Full reference: see COLORSCHEME.md
 - Spacing: Use Tailwind scale (`mt-8` `mb-6` `p-4`)
 - Borders: `border border-[var(--border)]`
 - Links: `text-[var(--link)] hover:text-[var(--link-hover)]`
 - Bold text in `<article>`: Use CSS variable `--bold` (automatically colored per theme)
 - Italic text in `<article>`: Use CSS variable `--italic`
+- Parenthetical side-notes can use `<span class="paren-note">(...)</span>` when they carry meaningful context
+- Raw technical names in prose should usually be inline code when they are important types, functions, fields, or literals
 
 ### Jekyll/Liquid
 - Always use `{{ '/path/' | relative_url }}` for internal links (not absolute paths)
@@ -110,6 +125,15 @@ Add entries in both `index.html` (Projects section) and `projects/index.html`:
 - Reference: `<img src="{{ '/blogs/my-post/image.png' | relative_url }}">`
 - Add `alt` attribute for accessibility
 - Style: `w-full rounded-xl mb-6 border border-[var(--border)]`
+- Banner images go in the post folder, referenced at the top of the article
+- Diagrams (Excalidraw exports) go in the same post folder
+- Placeholder when image is not ready yet:
+  ```html
+  <!-- TODO: add image — [description of what goes here] -->
+  <div class="w-full h-48 rounded-xl mb-6 border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center">
+    <span class="text-[var(--text-muted)] text-sm">[placeholder: description]</span>
+  </div>
+  ```
 
 ### Naming Conventions
 - Folders: kebab-case (`json-marshals-and-go`, `anatomy-of-subagents`)
@@ -137,9 +161,18 @@ Theme toggle logic in `head.html`:
 4. CSS variables automatically update based on `[data-theme]` selector
 
 Theme colors defined in `assets/css/style.css`:
-- `:root` defaults to mocha
-- `[data-theme="orange"]` overrides variables
-- Prism.js syntax highlighting uses theme variables
+- `:root` defines all semantic variables with mocha values
+- `[data-theme="orange"]` overrides the same variables with orange values
+- Both themes define the full variable set (core, extended palette, code highlighting)
+- Prism.js syntax highlighting uses `--code-*` variables in both themes
+- No `--ctp-*` variables should ever appear in HTML — internal CSS only
+
+Visual intent:
+- keep the current website theme intact
+- inline code should not look dull
+- comments in code should recede from real code
+- syntax lanes should separate comments / strings / functions / keywords clearly
+- code blocks should feel like a dark slate surface, not dead black
 
 ## Important Patterns
 

@@ -1,117 +1,97 @@
 # Portfolio Color Scheme Reference
 
-This portfolio supports multiple themes. The default is **Catppuccin Mocha**, and an alternative **Orange Theme** is available via the theme toggle.
+Two themes controlled by `data-theme` attribute on `<html>`. All colors use CSS variables — never hardcode hex values in HTML.
 
 ---
 
-## Catppuccin Mocha (Default)
+## Semantic Variables (both themes)
 
-Based on **Catppuccin Mocha** palette. 
+| Variable | Mocha | Orange | Purpose |
+|----------|-------|--------|---------|
+| `--bg` | `#1e1e2e` | `#0a0a0a` | Page background |
+| `--text` | `#cdd6f4` | `#eeeeee` | Primary text |
+| `--text-muted` | `#a6adc8` | `#808080` | Secondary/muted text |
+| `--primary` | `#cba6f7` | `#EC5B2B` | Headings, nav links |
+| `--secondary` | `#fab387` | `#EE7948` | Hover states |
+| `--accent` | `#f9e2af` | `#FFF7F1` | Badges, social links |
+| `--link` | `#89b4fa` | `#6ba1e6` | Link color |
+| `--link-hover` | `#74c7ec` | `#82aaff` | Link hover |
+| `--border` | `#313244` | `#1e1e1e` | Borders, separators |
+| `--bold` | `#74c7ec` | `#EC5B2B` | Bold text in articles |
+| `--italic` | `#a6e3a1` | `#e5c07b` | Italic text in articles |
+| `--surface` | `#181825` | `#060606` | Card/elevated backgrounds |
 
-| Element | Color | Hex | CSS Variable |
-|---------|-------|-----|--------------|
-| Background | Base | `#1e1e2e` | `var(--bg)` |
-| Text | Text | `#cdd6f4` | `var(--text)` |
-| Muted Text | Subtext0 | `#a6adc8` | `var(--text-muted)` |
-| Primary | Mauve | `#cba6f7` | `var(--primary)` |
-| Secondary | Peach | `#fab387` | `var(--secondary)` |
-| Accent | Yellow | `#f9e2af` | `var(--accent)` |
-| Links | Blue | `#89b4fa` | `var(--link)` |
-| Border | Surface0 | `#313244` | `var(--border)` |
+## Extended Palette
+
+| Variable | Mocha | Orange | Purpose |
+|----------|-------|--------|---------|
+| `--cyan` | `#94e2d5` | `#56b6c2` | Code functions |
+| `--red` | `#f38ba8` | `#e06c75` | Error/red accents |
+| `--gold` | `#f9e2af` | `#e5c07b` | Numbers, warm accent |
+| `--cream` | `#f5e0dc` | `#fff7f1` | Operators, URLs |
+| `--peach` | `#fab387` | `#ee7948` | Properties fallback |
+| `--muted-code` | `#6c7086` | `#6c6c6c` | Code comments |
+
+## Code Variables
+
+| Variable | Mocha | Orange | Purpose |
+|----------|-------|--------|---------|
+| `--code-inline-text` | `#89b4fa` | `#8cbeff` | Inline code text |
+| `--code-inline-bg` | `rgba(137,180,250,0.1)` | `rgba(107,161,230,0.12)` | Inline code background |
+| `--code-inline-border` | `rgba(137,180,250,0.2)` | `rgba(107,161,230,0.22)` | Inline code border |
+| `--code-block-bg` | `#181825` | `#161b22` | Code block background |
+| `--code-block-border` | `#313244` | `#243041` | Code block border |
+| `--code-keyword` | `#cba6f7` | `#ec5b2b` | Keywords |
+| `--code-property` | `#fab387` | `#6ba1e6` | Properties/tags |
+| `--code-string` | `#a6e3a1` | `#78d278` | Strings |
+| `--code-function` | `#89b4fa` | `#56b6c2` | Functions/classes |
+| `--code-number` | `#f9e2af` | `#e5c07b` | Numbers/regex |
+| `--code-punctuation` | `#cdd6f4` | `#d8dee9` | Punctuation |
 
 ---
 
-## Orange Theme
+## Usage Rules
 
-A high-contrast theme with orange accents. See [ORANGE_THEME.md](./ORANGE_THEME.md) for full details.
+- Always use `text-[var(--variable)]` or `bg-[var(--variable)]` in Tailwind classes
+- Never use `--ctp-*` variables in HTML — those are internal to the CSS
+- Card/elevated surfaces: `bg-[var(--surface)]`
+- See [ORANGE_THEME.md](./ORANGE_THEME.md) for raw orange palette definitions
 
-| Element | Hex | CSS Variable |
-|---------|-----|--------------|
-| Background | `#1a0f0c` | `var(--bg)` |
-| Text | `#eeeeee` | `var(--text)` |
-| Muted Text | `#808080` | `var(--text-muted)` |
-| Primary | `#EC5B2B` | `var(--primary)` |
-| Secondary | `#EE7948` | `var(--secondary)` |
-| Accent | `#FFF7F1` | `var(--accent)` |
-| Links | `#EC5B2B` | `var(--link)` |
-| Border | `#EC5B2B` | `var(--border)` |
-
----
-
-## Usage in Code
-
-The site uses CSS variables defined in `assets/css/style.css`. Themes are toggled by setting the `data-theme` attribute on the `<html>` element.
-
-- `mocha` (Default)
-- `orange`
-
-
----
-
-## Component Examples
+## Component Patterns
 
 ### Social Links
 ```html
-<div class="flex gap-4 text-base">
-  <a href="..." class="text-[#a6e3a1] hover:text-[#94e2d5] font-medium">Twitter</a>
-  <span class="text-[#585b70]">/</span>
-  <a href="..." class="text-[#a6e3a1] hover:text-[#94e2d5] font-medium">Github</a>
-</div>
+<a href="..." class="text-[var(--accent)] hover:text-[var(--secondary)]">Twitter</a>
 ```
 
-### Section Header
+### Headings
 ```html
-<h2 class="text-2xl font-bold text-[#cba6f7] mb-4">Section Title</h2>
+<h2 class="text-2xl font-bold text-[var(--primary)] mb-4">Section Title</h2>
 ```
 
-### Project Item
+### Card / Elevated Surface
 ```html
-<span class="text-[#fab387] font-bold">Project Name</span>
-<span class="text-[#bac2de]">Description text</span>
+<div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)]">...</div>
 ```
 
-### Code Block
+### Image Placeholder
 ```html
-<pre class="bg-[#181825] p-4 rounded-lg border border-[#313244]">
-  <code class="text-[#cdd6f4]">...</code>
-</pre>
-```
-
-### Inline Code
-```html
-<code class="bg-[#313244] px-1.5 py-0.5 rounded text-[#f5c2e7]">code</code>
-```
-
-### Tags/Labels
-```html
-<span class="text-sm text-[#6c7086]">Category / Tag</span>
+<img src="{{ '/blogs/post-slug/image.png' | relative_url }}" alt="[description]" class="w-full rounded-xl mb-6 border border-[var(--border)]" />
 ```
 
 ### Blockquote
 ```html
-<blockquote class="border-l-2 border-[#cba6f7] pl-4 text-[#a6adc8] italic">
+<blockquote class="border-l-2 border-[var(--primary)] pl-4 text-[var(--text-muted)] italic">
   Quote text here
 </blockquote>
 ```
 
----
-
-## Quick Reference (Tailwind Classes)
-
+### Quick Tailwind Reference
 ```
-Primary Text:     text-[#cdd6f4]
-Muted Text:       text-[#a6adc8]
-Faint Text:       text-[#6c7086]
-Links:            text-[#89b4fa] hover:text-[#74c7ec]
-Social Links:     text-[#f9e2af] hover:text-[#fab387]
-Headings:         text-[#cba6f7]
-Project Names:    text-[#fab387]
-Highlights:       text-[#f9e2af]
-Borders:          border-[#313244]
-Separators:       text-[#585b70]
-Code BG:          bg-[#181825]
-
-Bold (strong):    text-[#74c7ec] (Sapphire)
-Italic (em):      text-[#a6e3a1] (Green)
-Strikethrough:    text-[#eba0ac] (Maroon)
+text-[var(--text)]          text-[var(--text-muted)]
+text-[var(--primary)]       text-[var(--secondary)]
+text-[var(--link)]          text-[var(--link-hover)]
+text-[var(--accent)]        text-[var(--bold)]
+bg-[var(--bg)]              bg-[var(--surface)]
+border-[var(--border)]
 ```
