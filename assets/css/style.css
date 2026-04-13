@@ -127,19 +127,19 @@ hr {
     border-color: var(--border) !important;
 }
 
-/* Bold & Italic in article content */
-article strong {
+/* Bold & Italic — site-wide */
+strong {
     color: var(--bold) !important;
     font-weight: bold;
 }
 
-article em {
+em {
     color: var(--italic) !important;
     font-style: italic;
 }
 
-/* Inline code in articles */
-article :not(pre) > code {
+/* Inline code — site-wide */
+:not(pre) > code {
     background-color: var(--code-inline-bg);
     border: 1px solid var(--code-inline-border);
     color: var(--code-inline-text) !important;
@@ -149,17 +149,17 @@ article :not(pre) > code {
 }
 
 /* Highlighted keywords (used for key terms that need to pop) */
-article .hl {
+.hl {
     color: var(--bold) !important;
     font-weight: bold;
 }
 
-article .hl-yellow {
+.hl-yellow {
     color: var(--italic) !important;
     font-style: italic;
 }
 
-article .paren-note {
+.paren-note {
     color: var(--italic) !important;
 }
 
@@ -180,11 +180,11 @@ article {
 }
 
 /* List markers */
-article ol li::marker {
+ol li::marker {
     color: var(--text-muted);
 }
 
-article ul li::marker {
+ul li::marker {
     color: var(--text-muted);
 }
 
