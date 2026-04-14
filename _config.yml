@@ -1,6 +1,10 @@
 title: Parth Sharma
+description: "Building agents, tooling, and writing about it. Go Agent SDK, agentic frameworks, and systems engineering."
 url: "https://parthshr370.github.io"
 baseurl: ""
+author: Parth Sharma
+twitter_handle: parthshr370
+github_handle: parthshr370
 
 # Build settings
 markdown: kramdown
