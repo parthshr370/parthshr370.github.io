@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "How I built tool calling engine for my agent SDK"
+title: "How I built a tool calling engine for my Go agent SDK"
 date_display: "April 13, 2026"
 read_time: "8 min read"
 permalink: /blogs/how-i-built-tool-calling-engine-for-my-agent-sdk/
@@ -9,11 +9,15 @@ prism:
   - json
 ---
 
-<p class="mb-6 text-sm text-[var(--accent)] opacity-80">
-  Agent SDK series - Part 2
+<p class="mb-6 text-sm text-[var(--cyan)] opacity-80">
+  Go Agent SDK series - Part 2
 </p>
 
 <img src="{{ '/blogs/how-i-built-tool-calling-engine-for-my-agent-sdk/toolcalling_painitng_banner_image.jpg' | relative_url }}" alt="How I built tool calling engine for my agent SDK" class="w-full rounded-xl mb-8 border border-[var(--border)]" />
+
+<p class="mb-6 text-sm text-[var(--text-muted)]">
+  <strong>Prerequisites:</strong> Part one of this series (<a href="{{ '/blogs/how-i-built-my-own-langchain-from-scratch-in-go/' | relative_url }}" class="text-[var(--link)] hover:underline">structs, messages, and history</a>), basic understanding of Go reflection, and familiarity with JSON Schema. The post explains reflection as it comes up, so you don't need to be an expert.
+</p>
 
 <div class="mb-10">
   <h2 class="text-xl font-bold mb-4 text-[var(--primary)]">Table of contents</h2>

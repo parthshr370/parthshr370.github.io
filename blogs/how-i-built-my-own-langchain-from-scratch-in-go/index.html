@@ -9,8 +9,8 @@ prism:
   - json
 ---
 
-<p class="mb-6 text-sm text-[var(--text-muted)]">
-  Agent SDK series - Part 1
+<p class="mb-6 text-sm text-[var(--cyan)] opacity-80">
+  Go Agent SDK series - Part 1
 </p>
 
 <!-- Banner -->
@@ -336,9 +336,12 @@ Turn 5: append(tool result: "Sunny, 22C")</code></pre>
 
 <hr class="border-[var(--border)] my-8" />
 
-<p class="text-sm text-[var(--text-muted)]">
-  You can check out the full code and follow along here - <a href="https://github.com/parthshr370/Go-Agent-sdk" class="text-[var(--link)] hover:underline">github.com/parthshr370/Go-Agent-sdk</a>
-</p>
-<p class="text-sm text-[var(--text-muted)] mt-2">
-  Major inspiration for the struct design came from the <a href="https://platform.openai.com/docs/api-reference/chat" class="text-[var(--link)] hover:underline">OpenAI Chat API documentation</a> and the <a href="https://pkg.go.dev/encoding/json" class="text-[var(--link)] hover:underline">Go encoding/json package</a>.
-</p>
+<h3 class="text-xl font-bold mb-4 text-[var(--primary)]">Further reading</h3>
+
+<ul class="list-disc pl-6 mb-6 space-y-3 text-sm leading-relaxed">
+  <li><strong><a href="{{ '/blogs/how-i-built-tool-calling-engine-for-my-agent-sdk/' | relative_url }}" class="text-[var(--link)] hover:underline">Go Agent SDK - Part 2</a></strong> - the next post covering tool registration, schema generation, execution, and result flow</li>
+  <li><strong><a href="https://github.com/parthshr370/Go-Agent-sdk" class="text-[var(--link)] hover:underline">Go Agent SDK repo</a></strong> - the full codebase behind this series</li>
+  <li><strong><a href="{{ '/blogs/json-marshals-and-go/' | relative_url }}" class="text-[var(--link)] hover:underline">JSON, Marshals and Go</a></strong> - a deeper look at the marshalling that bridges Go types and JSON</li>
+  <li><strong><a href="https://platform.openai.com/docs/api-reference/chat" class="text-[var(--link)] hover:underline">OpenAI Chat API docs</a></strong> - the API schema that inspired the struct design</li>
+  <li><strong><a href="https://pkg.go.dev/encoding/json" class="text-[var(--link)] hover:underline">Go <code>encoding/json</code> docs</a></strong> - the package that makes marshalling work</li>
+</ul>
