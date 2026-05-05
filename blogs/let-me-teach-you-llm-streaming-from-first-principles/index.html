@@ -1,0 +1,556 @@
+---
+layout: post
+title: "Let's learn LLM streaming from first principles"
+description: "Understanding LLM streaming from first principles by building it into a Go Agent SDK. Covers SSE, stream events, provider parsers, accumulation, tool calls, and RunStream."
+date_display: "May 5, 2026"
+read_time: "10 min read"
+permalink: /blogs/let-me-teach-you-llm-streaming-from-first-principles/
+image: /blogs/let-me-teach-you-llm-streaming-from-first-principles/constableparhammill.png
+prism:
+  - go
+  - json
+---
+
+<p class="mb-6 text-sm text-[var(--cyan)] opacity-80">
+  <strong>Go Agent SDK series - Part 3</strong>
+</p>
+
+<img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/constableparhammill.png' | relative_url }}" alt="LLM streaming from first principles" class="w-full rounded-xl mb-8 border border-[var(--border)]" />
+
+<p class="mb-6 text-sm text-[var(--text-muted)]">
+  <strong>Prerequisites:</strong> Part one of this series (<a href="{{ '/blogs/how-i-built-my-own-langchain-from-scratch-in-go/' | relative_url }}" class="text-[var(--link)] hover:underline">structs, messages, and history</a>) and part two (<a href="{{ '/blogs/how-i-built-tool-calling-engine-for-my-agent-sdk/' | relative_url }}" class="text-[var(--link)] hover:underline">tool calling</a>). This post builds on both and focuses on the piece that makes agents feel alive, <strong>streaming</strong>.
+</p>
+
+<div class="mb-10">
+  <h2 class="text-xl font-bold mb-4 text-[var(--primary)]">Table of contents</h2>
+  <details open class="group border border-[var(--border)] rounded-lg p-3 bg-[var(--bg)]">
+    <summary class="cursor-pointer list-none flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+      <span class="transition-transform group-open:rotate-90">></span>
+      <span>Table of contents</span>
+    </summary>
+    <ul class="mt-4 space-y-2 pl-6 border-l border-[var(--border)] text-sm">
+      <li><a href="#the-waiting-problem" class="hover:underline text-[var(--link)]">The waiting problem</a></li>
+      <li><a href="#sse-and-the-open-connection" class="hover:underline text-[var(--link)]">SSE and the open connection</a></li>
+      <li><a href="#laying-down-the-data-structs" class="hover:underline text-[var(--link)]">Laying down the data structs</a></li>
+      <li><a href="#parsing-the-flowing-data" class="hover:underline text-[var(--link)]">Parsing the flowing data</a></li>
+      <li><a href="#reading-from-the-stream" class="hover:underline text-[var(--link)]">Reading from the stream</a></li>
+      <li><a href="#accumulating-the-water" class="hover:underline text-[var(--link)]">Accumulating the water</a></li>
+      <li><a href="#runstream-the-streaming-agent-loop" class="hover:underline text-[var(--link)]">RunStream() - The streaming agent loop</a></li>
+      <li><a href="#bookend" class="hover:underline text-[var(--link)]">Bookend</a></li>
+    </ul>
+  </details>
+</div>
+
+<p class="mb-6 leading-relaxed">
+  This is part three of a multi-blog series on building a <strong>Go Agent SDK from scratch</strong>. Part one covered the backbone, the <strong>structs</strong> that map to the API schema, <strong>message builders</strong> that shape each turn, and how <strong>history</strong> is maintained as a growing <code>[]llm.Message</code> slice. Part two dived into <strong>tool calling</strong>, the most complex piece of the whole system, from registration to execution and result flow. This part picks up where that left off, tackling the piece that makes agents feel alive, <strong>streaming</strong>.
+</p>
+
+<h2 id="the-waiting-problem" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">The waiting problem</h2>
+
+<p class="mb-6 leading-relaxed">
+  The general idea of an agent SDK is:
+</p>
+
+<ul class="list-disc pl-6 mb-6 space-y-2">
+  <li>Send a request to an LLM</li>
+  <li><strong><em>Wait</em></strong> for it to respond</li>
+  <li>Execute tool calls if any</li>
+  <li>Compile and return the final response</li>
+</ul>
+
+<p class="mb-6 leading-relaxed">
+  Everything is built around this <strong>waiting mechanism</strong> where you wait for the <em>entire answer</em> to arrive at once.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Every time you send a message, the agent goes <strong>silent</strong> without any feedback. Then after a few seconds, the entire response drops on you at once. For short answers this is fine. For longer ones, or for <strong>tool calls</strong> where the agent is thinking through multiple steps, you are just staring at a blank screen wondering if the program hung. For longer sessions it becomes even more of a bottleneck, <em>the user might just think the whole UI is stuck</em>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <strong>Streaming solves both.</strong> The user side of giving feedback instantly, and the technical bottleneck where nothing is visible until the whole response is ready. Instead of waiting for the LLM to finish its entire thought before showing you anything, you get <em>tokens as they are generated</em>. Same answer, but you see it build up in real time.
+</p>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+  <img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/non streaming 1 .png' | relative_url }}" alt="Non-streaming waits and returns the full response at once" class="w-full rounded-xl border border-[var(--border)] bg-white" />
+  <img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/streaming 1.png' | relative_url }}" alt="Streaming returns tokens as they are generated" class="w-full rounded-xl border border-[var(--border)] bg-white" />
+</div>
+
+<p class="mb-6 text-sm text-[var(--text-muted)] leading-relaxed">
+  <strong>Fig 1:</strong> Non-streaming waits for the full answer, while streaming starts returning tokens as soon as the model generates them.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <strong><em>Let's contrast and compare.</em></strong>
+</p>
+
+<p class="mb-6 leading-relaxed">
+  This is what a normal response JSON looks like in a generic LLM API shape. A <strong>complete answer</strong>, but the first part of the answer arrives at the same time as the last part of the answer.
+</p>
+
+<pre><code class="language-json">{
+  "id": "resp_1234567890",
+  "object": "response",
+  "status": "completed",
+  "model": "gpt-4.1-mini",
+  "output": [
+    {
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "AI, or artificial intelligence, is technology that lets computers perform tasks that usually require human thinking."
+        }
+      ]
+    }
+  ]
+}</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  While streaming sends response items in <strong>deltas</strong> <span class="paren-note">(we can call them chunks for simplicity)</span>. This example is also a generic skeleton. The exact field names change by provider, but the idea stays the same: <em>small pieces arrive one by one</em>.
+</p>
+
+<pre><code class="language-json">[
+  {
+    "type": "response.created",
+    "response": {
+      "id": "resp_1234567890",
+      "status": "in_progress",
+      "model": "gpt-4.1-mini"
+    }
+  },
+  {
+    "type": "response.output_text.delta",
+    "delta": "AI, "
+  },
+  {
+    "type": "response.output_text.delta",
+    "delta": "or artificial intelligence, "
+  },
+  {
+    "type": "response.output_text.delta",
+    "delta": "is technology that lets computers perform tasks "
+  },
+  {
+    "type": "response.output_text.delta",
+    "delta": "that usually require human thinking."
+  },
+  {
+    "type": "response.completed",
+    "response": {
+      "id": "resp_1234567890",
+      "status": "completed"
+    }
+  }
+]</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  They arrive one by one in these complex JSONs and now it is our duty to handle these data formats and present them nicely to the users.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Before I implemented streaming, the only way to get a response back was through <code>Run()</code>. All the requests, tool calls, and messages were assembled and pushed through it.
+</p>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  <strong>Side note:</strong> <code>Run()</code> is the conductor that assembles messages, history, and tool calling together to form one coherent response loop. It sends a request, checks if the response is text or a tool call, executes tools if needed, and loops until the LLM gives a final text answer. We covered it in part two.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  This works for normal responses. But <code>Run()</code> was built around <strong>one complete response</strong>. If we simply swapped the provider call to streaming, it would essentially fail the moment it saw a burst of streaming tokens, because text and tool arguments now arrive as <em>fragments instead of complete JSON</em>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  So as fate has it, I had to dive into the primitives of the HTTP world, aka SSE.
+</p>
+
+<h2 id="sse-and-the-open-connection" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">SSE and the open connection</h2>
+
+<p class="mb-6 leading-relaxed">
+  Non-streaming requests go like, send request, read full body response, close.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Streaming responses are a bit like <strong>open taps</strong>. Keep the connection open, read the answers line by line as the server pushes <em>Server-Sent Events</em>, close when you receive a string that signals the stream closed.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  The idea of SSE is there, but how would my Go SDK handle these open requests and then realize when to close the connection <span class="paren-note">(and even trickier is to handle tool calls which might have incomplete JSONs)</span>?
+</p>
+
+<p class="mb-6 leading-relaxed">
+  SSE internally is pretty simple. The server sends lines prefixed with <code>data:</code>, each line is a <strong>JSON payload</strong>. Blank lines separate events. Lines starting with <code>:</code> are comments <span class="paren-note">(keepalive pings)</span>. The stream ends when the server sends <code>data: [DONE]</code> or just closes the connection.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  On the wire it looks something like this:
+</p>
+
+<pre><code class="language-text">: keepalive
+
+data: {"id":"chatcmpl-abc123","choices":[{"delta":{"content":"Hello"}}]}
+
+data: {"id":"chatcmpl-abc123","choices":[{"delta":{"content":" world"}}]}
+
+data: [DONE]</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  Each <code>data:</code> line is a JSON payload the server pushes to us as it generates. Our job is to <strong>read these lines</strong>, <strong>parse the JSON</strong> inside them, and turn them into something our SDK can work with. But our SDK speaks in terms of <code>Message</code>, <code>ToolCall</code>, <code>ChatResponse</code>, not raw SSE lines. There is a gap between <em>what the wire gives us</em> and <em>what our code needs</em>. So before we start writing any code, here are the problems we need to solve:
+</p>
+
+<ul class="list-disc pl-6 mb-6 space-y-2">
+  <li>How do you represent a single <strong>streaming event</strong> in Go</li>
+  <li>How do you parse <strong>provider-specific JSON</strong> into a common format</li>
+  <li>How do you <strong>read from an open SSE connection</strong> line by line</li>
+  <li>How do you <strong>stitch fragments</strong> back into a complete message</li>
+  <li>How do <strong>tool calls</strong> work when their arguments arrive as fragments</li>
+</ul>
+
+<p class="mb-6 leading-relaxed">
+  Let's map out all the major blocks we need to build on.
+</p>
+
+<img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/streaming-sse-pipeline.excalidraw.png' | relative_url }}" alt="SSE data lines become StreamEvents and then a final llm.Message" class="w-full rounded-xl mb-3 border border-[var(--border)]" />
+
+<p class="mb-6 text-sm text-[var(--text-muted)] leading-relaxed">
+  <strong>Fig 2:</strong> Streaming data comes in, the useful bits are extracted, fragments move into a buffer, and the final message gets popped out at the end.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  The path is simple once you see it laid out. <strong>Streaming data</strong> comes in, we strip out the important details, move those pieces into a buffer <span class="paren-note">(the Accumulator)</span>, and then pop out one final message that the rest of the SDK can understand.
+</p>
+
+<h2 id="laying-down-the-data-structs" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Laying down the data structs</h2>
+
+<p class="mb-6 leading-relaxed">
+  First we need to account for the elephant in the room, that is the <strong>format in which data comes in</strong>. Since Go has structs we expect that the JSON comes in, converts to struct-based output, and then converts to something the SDK can understand <span class="paren-note">(like I did in the previous blogs)</span>.
+</p>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  <strong>Side note:</strong> if you want a cleaner understanding of how marshalling works in Go and how JSON maps to structs, you can take a look at <a href="{{ '/blogs/json-marshals-and-go/' | relative_url }}" class="text-[var(--link)] hover:underline">this blog</a>. The same idea carries forward here, the only difference is we are dealing with fragments instead of complete responses.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  We are going to take OpenAI's API as the baseline since it's the standard for most providers and we need to make minor tweaks on top of it to get full compatibility. Conceptually, OpenAI presents streaming data like this:
+</p>
+
+<pre><code class="language-json">{
+  "type": "response.output_text.delta",
+  "sequence_number": 3,
+  "item_id": "msg_1234567890",
+  "output_index": 0,
+  "content_index": 0,
+  "delta": "artificial intelligence "
+}</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  In the actual SDK, the OpenAI-compatible chat completions parser reads from <code>choices[0].delta.content</code> for text and <code>choices[0].delta.tool_calls</code> for tool calls. The example above is just the <em>first-principles shape</em>: <strong>event type</strong>, <strong>index</strong>, and <strong>delta</strong>. Now to think how it would translate to Go structs, it's as simple as:
+</p>
+
+<pre><code class="language-go">type StreamEvent struct {
+    Type EventType
+    // Set when Type == EventText
+    Text string
+    // Set when Type == EventToolCallStart
+    ToolCallID   string
+    ToolCallName string
+    // Set when Type == EventToolCallStart or EventToolCallDelta or EventToolCallDone
+    ToolCallIndex int
+    // Set when Type == EventToolCallDelta
+    ToolCallArgs string
+    // Set when Type == EventDone
+    FinishReason string
+}</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  This is the baseline struct, along with the event types that tell us what kind of event just arrived:
+</p>
+
+<pre><code class="language-go">const (
+    EventText EventType = iota
+    EventToolCallStart
+    EventToolCallDelta
+    EventToolCallDone
+    EventDone
+    EventError
+)</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  Now here is something that might look odd at first glance. <code>StreamEvent</code> has 6 fields but on any given event, only one or two of them actually have values. When a text delta arrives, the event looks like <code>StreamEvent{Type: EventText, Text: "Hello"}</code> and everything else is empty. When a tool call starts, <code>ToolCallID</code> and <code>ToolCallName</code> have values but <code>Text</code> and <code>FinishReason</code> are empty.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  This is a <strong>design choice</strong>. We could have built separate structs for each event type, but that would mean separate types for text events, tool call events, done events, and so on. The code that consumes these events would then need type switches everywhere. One struct with a <code>Type</code> field is simpler and sufficient for our needs. You check <code>Type</code> first, then read the fields that are relevant to that type.
+</p>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  The <code>EventType</code> constants use <code>iota</code>, which is Go's way of auto-incrementing integer constants. <code>EventText</code> is 0, <code>EventToolCallStart</code> is 1, <code>EventToolCallDelta</code> is 2, and so on. The actual numbers don't matter, what matters is that each type has a unique value we can switch on.
+</p>
+
+<h2 id="parsing-the-flowing-data" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Parsing the flowing data</h2>
+
+<p class="mb-6 leading-relaxed">
+  Now we have a shape for a single stream event, but raw provider JSON still does not naturally arrive in that shape. OpenAI has one format, Anthropic has another, Gemini has another. So before the rest of the SDK can use these events, we need one small translator in the middle. That translator is <code>ParseFunc</code>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <code>ParseFunc</code> is the <strong>adapter boundary</strong>. OpenAI, Anthropic, and Gemini all send different stream JSON, but after <code>ParseFunc</code>, the rest of the SDK only sees <code>StreamEvent</code>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  The delta comes in and goes through <code>ParseFunc</code> as:
+</p>
+
+<pre><code class="language-go">type ParseFunc func(data string) (StreamEvent, error)</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  Our information comes in these deltas <span class="paren-note">(chunks)</span> that are nested JSON objects that tell us a lot of information. In most cases we only need to parse some strings and values that we need, the rest will mostly be empty. Our job is to take that and return meaningful data from it.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Some data to look for:
+</p>
+
+<ul class="list-disc pl-6 mb-6 space-y-2">
+  <li>The actual text delta</li>
+  <li>Hints that tell us the state of the stream at that particular moment <span class="paren-note">(can be tool calls, end of stream, or something else entirely)</span></li>
+</ul>
+
+<p class="mb-6 leading-relaxed">
+  To do this we need a pipe and then a filter that reads from the end of the pipe.
+</p>
+
+<h2 id="reading-from-the-stream" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Reading from the stream</h2>
+
+<p class="mb-6 leading-relaxed">
+  So now we know what a parsed event should look like. But we still need something that actually sits on the open HTTP connection and keeps pulling data out line by line. This is the part that turns the open tap into something Go code can consume one event at a time.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  We define two things, <code>StreamReader</code> <span class="paren-note">(a struct)</span> and <code>Recv()</code> <span class="paren-note">(the receiver function)</span>.
+</p>
+
+<pre><code class="language-go">type StreamReader struct {
+    body    io.ReadCloser
+    scanner *bufio.Scanner
+    parse   ParseFunc
+    done    bool
+}</code></pre>
+
+<ul class="list-disc pl-6 mb-6 space-y-2">
+  <li><strong><code>body</code></strong> is the open HTTP connection, the tap that stays open while the server pushes events</li>
+  <li><strong><code>scanner</code></strong> reads lines one at a time from that connection</li>
+  <li><strong><code>parse</code></strong> is the provider-specific <code>ParseFunc</code> from the previous section that translates the JSON inside each line</li>
+  <li><strong><code>done</code></strong> tracks whether we've seen the end signal so we don't read from a closed stream</li>
+</ul>
+
+<p class="mb-6 leading-relaxed">
+  Once this struct exists, the next job is simple: give me the next useful event from the stream.
+</p>
+
+<pre><code class="language-go">func (r *StreamReader) Recv() (StreamEvent, error)</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  We use this function to fetch the data out, check for multiple strings inside the delta <span class="paren-note">(chunk)</span>. For this case we just care about <code>data:</code> and its contents inside. Strip the prefix, check for the <code>[DONE]</code> state if any, otherwise hand the payload to ParseFunc.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <code>StreamReader</code> does not know what the JSON looks like, it only knows the <strong>SSE envelope</strong>. It strips the envelope, extracts the payload, and delegates. That is the separation of concerns here. <em>StreamReader handles the wire format, ParseFunc handles the provider JSON.</em>
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <code>bufio.Scanner</code> reads one line at a time, so there is no buffering problem. You pull one event, process it, pull the next. The TCP connection handles backpressure on its own.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  If no error happens, <code>Recv()</code> returns the <code>StreamEvent</code> as is. If there is an error, we close the stream and return it.
+</p>
+
+<h2 id="accumulating-the-water" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Accumulating the water</h2>
+
+<p class="mb-6 leading-relaxed">
+  At this point the data is cleaner, but it is still not cohesive. We can read one event, then another event, then another event, but the user does not want scattered fragments. The user wants the complete answer. So we need something that acts as a stitching thread, pulling all the pieces together into a complete response.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <code>Recv()</code> gives us filtered data, but still in fragments. The Accumulator is the thing that holds those fragments long enough to turn them into a complete message.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  For this we define a struct to hold the new stitched version:
+</p>
+
+<pre><code class="language-go">type Accumulator struct {
+    text      strings.Builder
+    toolCalls map[int]*toolCallBuilder
+}</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  <code>strings.Builder</code> for text, straightforward. Every text fragment that comes in gets appended to the builder. <code>map[int]*toolCallBuilder</code> for tool calls, this one needs a bit more explaining.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <strong>Tool calls are trickier than text</strong> because the LLM can start multiple tool calls in parallel. Each fragment carries an index that tells you which call it belongs to. So we key by that index. A <code>toolCallBuilder</code> holds the ID, the name, and a <code>strings.Builder</code> for the arguments:
+</p>
+
+<pre><code class="language-go">type toolCallBuilder struct {
+    id   string
+    name string
+    args strings.Builder
+}</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  Why a map and not a slice? Because the LLM might use indices 0 and 2 but not 1. A map handles sparse indices cleanly, a slice would need nil checks or gap filling.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  With the struct defined, we start spinning the small functions that help us wire it all together.
+</p>
+
+<pre><code class="language-go">func (a *Accumulator) Add(event StreamEvent)</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  <code>Add()</code> is where the stitching happens. It takes a StreamEvent and switches on the Type:
+</p>
+
+<ul class="list-disc pl-6 mb-6 space-y-2">
+  <li><strong>Text events</strong> append to the text builder <span class="paren-note">(straightforward string concatenation)</span></li>
+  <li><strong>ToolCallStart events</strong> create a new builder in the map, keyed by index</li>
+  <li><strong>ToolCallDelta events</strong> append argument fragments <span class="paren-note">(partial JSON strings)</span> to the matching builder</li>
+</ul>
+
+<p class="mb-6 leading-relaxed">
+  One thing worth noting: <code>Add()</code> for <code>EventToolCallStart</code> also checks if <code>ToolCallArgs</code> is non-empty. That handles Gemini's case where args arrive complete in one shot instead of as fragments. The Accumulator does not care how the provider chose to deliver it, it just checks what is populated on each event.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Then we have our output functions:
+</p>
+
+<ul class="list-disc pl-6 mb-6 space-y-2">
+  <li><strong><code>Text()</code></strong> returns the complete accumulated text</li>
+  <li><strong><code>HasToolCalls()</code></strong> tells us if any tool calls were accumulated</li>
+  <li><strong><code>ToolCalls()</code></strong> returns them as the same <code>ToolCall</code> type used by <code>ChatResponse</code></li>
+  <li><strong><code>Message()</code></strong> builds a complete <code>Message</code> from the accumulated data <span class="paren-note">(the same <code>llm.Message</code> type that non-streaming produces)</span></li>
+</ul>
+
+<p class="mb-6 leading-relaxed">
+  One observation from all this. <code>acc.Message()</code> <span class="paren-note">(the message formed after accumulating all the delta strings)</span> produces the same <code>llm.Message</code> type that non-streaming produces. <strong>History does not care which path produced the message.</strong> A <code>Message</code> from streaming looks identical to a <code>Message</code> from <code>Run()</code>. This means the rest of the SDK, including history, tool execution, and conversation flow, does not need any special handling for streaming. <em>The Accumulator is the bridge that makes streaming and non-streaming end in the same shape.</em>
+</p>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  <strong>Side note:</strong> Each provider's ParseFunc handles its own JSON format, but the output is always the same <code>StreamEvent</code>, so the Accumulator never needs to know which provider it is dealing with.
+</p>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  OpenAI sends <code>choices[0].delta.content</code> for text and fragmented tool call arguments. Anthropic uses typed SSE events <span class="paren-note">(<code>content_block_start</code>, <code>content_block_delta</code>, <code>message_delta</code>)</span> and tool args arrive as <code>partial_json</code> fragments. Gemini uses a different streaming endpoint <span class="paren-note">(<code>streamGenerateContent?alt=sse</code>)</span>, has no <code>[DONE]</code> sentinel <span class="paren-note">(stream ends by EOF)</span>, and sends complete tool call arguments in one shot instead of fragments.
+</p>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  None of this matters to the Accumulator. It just checks what is populated on each event and stitches accordingly.
+</p>
+
+<h2 id="runstream-the-streaming-agent-loop" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">RunStream() - The streaming agent loop</h2>
+
+<p class="mb-6 leading-relaxed">
+  Before streaming, the only way to get a response back was through <code>Run()</code> <span class="paren-note">(the conductor that assembles messages, history, and tool calling into one coherent response loop)</span>. <code>RunStream()</code> from the outside is basically the same interface, <strong>same return type</strong>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  But instead of waiting for a full response from <code>CreateChat()</code> <span class="paren-note">(non-streaming)</span>, it takes its data from <code>StreamReader.Recv()</code> <span class="paren-note">(the stream receiver)</span>, and what feeds it is the <strong>Accumulator collecting events as they arrive</strong>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  First, a note on how the provider plugs into this. Not every provider supports streaming, so we have a separate interface for it:
+</p>
+
+<pre><code class="language-go">type StreamProvider interface {
+    CreateChatStream(ctx context.Context, req ChatRequest) (*StreamReader, error)
+}</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  <code>RunStream()</code> type-asserts the provider to <code>StreamProvider</code>. If the provider does not implement it, it returns an error right there. Only providers that opt in to streaming get to use this path.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <code>RunStream()</code> runs two nested loops, and each has a distinct job:
+</p>
+
+<img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/streaming-runstream-loop.excalidraw.png' | relative_url }}" alt="RunStream uses an outer LLM-call loop and an inner Recv loop" class="w-full rounded-xl mb-3 border border-[var(--border)]" />
+
+<p class="mb-6 text-sm text-[var(--text-muted)] leading-relaxed">
+  <strong>Fig 3:</strong> <code>RunStream()</code> has an outer loop for LLM calls and an inner loop for reading stream events until the response is complete.
+</p>
+
+<pre><code class="language-go">// outer loop: one iteration per LLM call
+for {
+    // 1. Create the stream
+    stream := sp.CreateChatStream(ctx, req)
+    var acc llm.Accumulator
+
+    // 2. Inner loop: read events one at a time
+    for {
+        event, err := stream.Recv()
+        if err == io.EOF { break }
+        acc.Add(event)
+        // fire callback on text tokens
+    }
+
+    // 3. Stream done, accumulated message goes to history
+    a.History = append(a.History, acc.Message())
+
+    // 4. Check for tool calls
+    if acc.HasToolCalls() {
+        // execute tools, continue outer loop
+        continue
+    }
+
+    // 5. No tool calls, return text
+    return acc.Text()
+}</code></pre>
+
+<ul class="list-disc pl-6 mb-6 space-y-2">
+  <li><strong>Create the stream:</strong> same request format as <code>Run()</code>, but instead of getting a <code>ChatResponse</code> <span class="paren-note">(the full response object)</span> back, we get a <code>StreamReader</code> holding an open connection.</li>
+  <li><strong>Inner loop reads events one at a time:</strong> each <code>Recv()</code> blocks until the next SSE chunk arrives, we feed it into the Accumulator via <code>Add()</code>, and if the event is a text token, we fire the <code>OnStreamToken</code> callback immediately. That callback is what makes streaming visible to the caller <span class="paren-note">(tokens appear in real time instead of the whole response dropping at once)</span>.</li>
+  <li><strong>Stream done, message goes to history:</strong> when the inner loop ends <span class="paren-note">(<code>Recv()</code> returned <code>io.EOF</code>)</span>, the Accumulator has the complete response. <code>acc.Message()</code> <span class="paren-note">(the accumulated message)</span> goes into history, same <code>llm.Message</code> type as non-streaming.</li>
+  <li><strong>Tool call check:</strong> if the Accumulator picked up tool calls during streaming, we execute them <span class="paren-note">(same as <code>Run()</code>)</span>, append tool results to history, and continue the outer loop. The LLM will see the tool results in the next iteration and respond accordingly.</li>
+</ul>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  <strong>Note:</strong> Tool call execution cannot happen while the stream is still flowing, because the arguments may still be incomplete. Their arguments arrive as fragmented JSON strings across multiple deltas <span class="paren-note">(chunks)</span>. The Accumulator stitches them together, but until the stream ends, the arguments are not complete enough to execute. That is why tool execution only happens after the inner loop finishes, not during it.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <strong>The exit:</strong> no tool calls means the LLM just responded with text, so we return it.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  There is one more thing worth calling out. The key difference from <code>Run()</code> is that <code>RunStream()</code> uses <strong>iteration instead of recursion</strong>. <code>Run()</code> recurses because each call is a complete request-response cycle, and it calls itself after tool execution. <code>RunStream()</code> iterates because we are already managing state with the Accumulator across the inner loop, so the outer loop is just <em>"go again with updated history."</em> The <code>continue</code> in the tool call branch does what the recursive <code>run()</code> call does in the non-streaming path, but without adding another frame to the call stack.
+</p>
+
+<h2 id="bookend" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Bookend</h2>
+
+<p class="mb-6 leading-relaxed">
+  So we started with the waiting problem, built the data structs to hold streaming events, the ParseFunc that keeps StreamReader provider-agnostic, the StreamReader that reads from the open connection line by line, and the Accumulator that stitches fragments back into a complete <code>Message</code>. <code>RunStream()</code> plugged all of it into the same agent loop with two nested loops instead of recursion.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  The key insight is that <code>acc.Message()</code> produces the same <code>llm.Message</code> as non-streaming. <strong>The Accumulator is the bridge</strong> that makes both paths end in the same shape. <em>Everything downstream stays the same.</em>
+</p>
+
+<p class="mb-6 leading-relaxed">
+  What comes next is making the SDK return structured Go types instead of raw strings. Think <code>Agent[MovieInfo]</code> instead of <code>Agent[string]</code>. That is structured output, and it is where we go next.
+</p>
+
+<hr class="border-[var(--border)] my-8" />
+
+<h3 class="text-xl font-bold mb-4 text-[var(--primary)]">Further reading</h3>
+
+<ul class="list-disc pl-6 mb-6 space-y-3 text-sm leading-relaxed">
+  <li><strong><a href="https://github.com/parthshr370/Go-Agent-sdk" class="text-[var(--link)] hover:underline">Go Agent SDK repo</a></strong> - the full codebase behind this series</li>
+  <li><strong><a href="{{ '/blogs/how-i-built-my-own-langchain-from-scratch-in-go/' | relative_url }}" class="text-[var(--link)] hover:underline">Go Agent SDK - Part 1</a></strong> - structs, messages, and history</li>
+  <li><strong><a href="{{ '/blogs/how-i-built-tool-calling-engine-for-my-agent-sdk/' | relative_url }}" class="text-[var(--link)] hover:underline">Go Agent SDK - Part 2</a></strong> - tool registration, schema generation, execution, and result flow</li>
+  <li><strong><a href="{{ '/blogs/json-marshals-and-go/' | relative_url }}" class="text-[var(--link)] hover:underline">JSON, Marshals and Go</a></strong> - useful if you want a cleaner mental model for marshalling, unmarshalling, and structs</li>
+  <li><strong><a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events" class="text-[var(--link)] hover:underline">MDN Server-Sent Events</a></strong> - the browser/web primitive behind the streaming shape</li>
+  <li><strong><a href="https://html.spec.whatwg.org/multipage/server-sent-events.html" class="text-[var(--link)] hover:underline">WHATWG Server-Sent Events spec</a></strong> - the actual HTML standard for SSE behavior</li>
+</ul>
