@@ -21,6 +21,10 @@ prism:
   <strong>Prerequisites:</strong> Part one of this series (<a href="{{ '/blogs/how-i-built-my-own-langchain-from-scratch-in-go/' | relative_url }}" class="text-[var(--link)] hover:underline">structs, messages, and history</a>) and part two (<a href="{{ '/blogs/how-i-built-tool-calling-engine-for-my-agent-sdk/' | relative_url }}" class="text-[var(--link)] hover:underline">tool calling</a>). This post builds on both and focuses on the piece that makes agents feel alive, <strong>streaming</strong>.
 </p>
 
+<p class="mb-6 text-sm text-[var(--text-muted)]">
+  <strong>Code:</strong> the SDK I am building through this series lives here - <a href="https://github.com/parthshr370/Go-Agent-sdk" class="text-[var(--link)] hover:underline">github.com/parthshr370/Go-Agent-sdk</a>
+</p>
+
 <div class="mb-10">
   <h2 class="text-xl font-bold mb-4 text-[var(--primary)]">Table of contents</h2>
   <details open class="group border border-[var(--border)] rounded-lg p-3 bg-[var(--bg)]">
@@ -45,6 +49,10 @@ prism:
   This is part three of a multi-blog series on building a <strong>Go Agent SDK from scratch</strong>. Part one covered the backbone, the <strong>structs</strong> that map to the API schema, <strong>message builders</strong> that shape each turn, and how <strong>history</strong> is maintained as a growing <code>[]llm.Message</code> slice. Part two dived into <strong>tool calling</strong>, the most complex piece of the whole system, from registration to execution and result flow. This part picks up where that left off, tackling the piece that makes agents feel alive, <strong>streaming</strong>.
 </p>
 
+<p class="mb-6 leading-relaxed">
+  The goal of this blog is to walk you through <strong>streaming</strong> from first principles while I also implement streaming in my own agent SDK in Golang. This should help anyone who wants to learn streaming by doing. I will walk through the streaming layer from the SSE/HTTP layer to the agent layer. By the end you should be able to understand and shape streaming as a whole, while also learning its internals inside an agent SDK <span class="paren-note">(like LangChain or pydantic-ai)</span>.
+</p>
+
 <h2 id="the-waiting-problem" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">The waiting problem</h2>
 
 <p class="mb-6 leading-relaxed">
@@ -63,7 +71,7 @@ prism:
 </p>
 
 <p class="mb-6 leading-relaxed">
-  Every time you send a message, the agent goes <strong>silent</strong> without any feedback. Then after a few seconds, the entire response drops on you at once. For short answers this is fine. For longer ones, or for <strong>tool calls</strong> where the agent is thinking through multiple steps, you are just staring at a blank screen wondering if the program hung. For longer sessions it becomes even more of a bottleneck, <em>the user might just think the whole UI is stuck</em>.
+  Every time you send a message, the agent goes <strong>silent</strong> without any feedback. Then after a few seconds, the entire response drops on you at once. For short answers this is fine. For longer ones, or for <strong>tool calls</strong> where the agent is thinking through multiple steps, you are just staring at a blank screen wondering if the program hung.
 </p>
 
 <p class="mb-6 leading-relaxed">
