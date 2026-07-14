@@ -7,10 +7,16 @@ nav_active: blogs
 permalink: /blogs/
 ---
 
-<section class="mt-8">
+<section class="blogs-page mt-8" aria-labelledby="blogs-heading">
+  <div class="blogs-page__intro">
+    <h2 id="blogs-heading" class="text-2xl font-bold text-[var(--primary)]">Writing</h2>
+    <p class="text-[var(--text-muted)] mt-2">Notes on agents, systems, infrastructure, and the code behind them.</p>
+  </div>
+
   
   <!-- Featured Posts -->
-  <div class="space-y-4 mb-12">
+    <p class="blogs-section-label text-[var(--gold)]">Featured writing</p>
+  <div class="blogs-featured space-y-4 mb-12">
 
     <!-- Let's learn LLM streaming from first principles -->
     <div class="post-card post-card--featured p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)]">
@@ -94,14 +100,14 @@ permalink: /blogs/
   </div>
 
   <!-- All Posts Section -->
-  <div class="mb-12">
-    <details class="group">
-      <summary class="flex items-center justify-between cursor-pointer list-none p-4 rounded-lg border border-[var(--border)] hover:bg-[var(--border)] transition-all">
+  <div class="blogs-archive mb-12">
+    <details class="blog-archive group">
+      <summary class="blog-archive__summary">
         <span class="text-xl font-bold text-[var(--primary)]">All Posts</span>
         <span class="transition-transform group-open:rotate-90 text-[var(--cyan)] text-xl">></span>
       </summary>
     
-      <div class="mt-6 space-y-8 pl-4 border-l-2 border-[var(--cyan)]">
+      <div class="blog-archive__list">
         <!-- Let's learn LLM streaming from first principles (Local) -->
         <div class="group">
             <a href="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/' | relative_url }}" class="block">
@@ -155,7 +161,7 @@ permalink: /blogs/
 
         <!-- Data Shapley -->
         <div class="group">
-            <a href="https://medium.com/@parthshr370/data-shapley-in-one-training-run-a74c35dfcb4f" target="_blank" class="block">
+            <a href="https://medium.com/@parthshr370/data-shapley-in-one-training-run-a74c35dfcb4f" target="_blank" rel="noopener noreferrer" class="block">
                 <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Data Shapley in One Training Run</h2>
                 <p class="text-sm text-[var(--text-muted)] mt-1">Data Attribution • LLMs</p>
             </a>
@@ -163,7 +169,7 @@ permalink: /blogs/
 
         <!-- MCP Communication -->
         <div class="group">
-            <a href="https://medium.com/@parthshr370/ai-without-borders-making-different-agent-frameworks-collaborate-through-mcp-7644bf5c5d9f" target="_blank" class="block">
+            <a href="https://medium.com/@parthshr370/ai-without-borders-making-different-agent-frameworks-collaborate-through-mcp-7644bf5c5d9f" target="_blank" rel="noopener noreferrer" class="block">
                 <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Creating your own Agent to Agent communication with MCP</h2>
                 <p class="text-sm text-[var(--text-muted)] mt-1">Agents • MCP • Protocol</p>
             </a>
@@ -171,7 +177,7 @@ permalink: /blogs/
 
         <!-- EEG Lab -->
         <div class="group">
-            <a href="https://medium.com/@parthshr370/your-guide-to-preprocessing-in-eeglab-5f865e538e4c" target="_blank" class="block">
+            <a href="https://medium.com/@parthshr370/your-guide-to-preprocessing-in-eeglab-5f865e538e4c" target="_blank" rel="noopener noreferrer" class="block">
                 <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Your Guide To Preprocessing EEG data in EEGLab</h2>
                 <p class="text-sm text-[var(--text-muted)] mt-1">Neuroscience • Python</p>
             </a>
@@ -179,7 +185,7 @@ permalink: /blogs/
 
         <!-- Mem0 Architecture -->
         <div class="group">
-            <a href="https://medium.com/@parthshr370/from-chat-history-to-ai-memory-a-better-way-to-build-intelligent-agents-f30116b0c124" target="_blank" class="block">
+            <a href="https://medium.com/@parthshr370/from-chat-history-to-ai-memory-a-better-way-to-build-intelligent-agents-f30116b0c124" target="_blank" rel="noopener noreferrer" class="block">
                 <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Demystifying the brilliant architecture of mem0</h2>
                 <p class="text-sm text-[var(--text-muted)] mt-1">Memory • Architecture • Agents</p>
             </a>
@@ -187,7 +193,7 @@ permalink: /blogs/
 
         <!-- Context Engineering -->
         <div class="group">
-            <a href="https://medium.com/@parthshr370/context-engineering-building-better-ai-worlds-beyond-prompts-71e844bf78c8" target="_blank" class="block">
+            <a href="https://medium.com/@parthshr370/context-engineering-building-better-ai-worlds-beyond-prompts-71e844bf78c8" target="_blank" rel="noopener noreferrer" class="block">
                 <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Context Engineering: Building Better AI Worlds Beyond Prompts</h2>
                 <p class="text-sm text-[var(--text-muted)] mt-1">Context • Prompt Engineering • AI</p>
             </a>
@@ -195,7 +201,7 @@ permalink: /blogs/
 
         <!-- Building MCP servers with CAMEL -->
         <div class="group">
-            <a href="https://medium.com/@parthshr370/building-mcp-servers-with-camel-ai-dbb419b083ad" target="_blank" class="block">
+            <a href="https://medium.com/@parthshr370/building-mcp-servers-with-camel-ai-dbb419b083ad" target="_blank" rel="noopener noreferrer" class="block">
                 <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Building MCP servers with CAMEL AI</h2>
                 <p class="text-sm text-[var(--text-muted)] mt-1">Tutorial • MCP • Python</p>
             </a>
@@ -203,7 +209,7 @@ permalink: /blogs/
 
         <!-- Building cool agents -->
         <div class="group">
-            <a href="https://medium.com/@parthshr370/building-cool-agents-with-camel-ai-1053b502e582" target="_blank" class="block">
+            <a href="https://medium.com/@parthshr370/building-cool-agents-with-camel-ai-1053b502e582" target="_blank" rel="noopener noreferrer" class="block">
                 <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Building cool agents with CAMEL AI</h2>
                 <p class="text-sm text-[var(--text-muted)] mt-1">Agents • Frameworks</p>
             </a>
@@ -211,7 +217,7 @@ permalink: /blogs/
 
         <!-- Song Intro -->
         <div class="group">
-            <a href="https://medium.com/@parthshr370/finding-the-intro-time-of-a-song-using-python-af1a735c3110" target="_blank" class="block">
+            <a href="https://medium.com/@parthshr370/finding-the-intro-time-of-a-song-using-python-af1a735c3110" target="_blank" rel="noopener noreferrer" class="block">
                 <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">Finding the intro time of a song using Python</h2>
                 <p class="text-sm text-[var(--text-muted)] mt-1">Audio Processing • Python</p>
             </a>
@@ -219,7 +225,7 @@ permalink: /blogs/
 
         <!-- PM4PY -->
         <div class="group">
-            <a href="https://medium.com/@parthshr370/how-to-get-started-with-pm4py-abebfa97d899" target="_blank" class="block">
+            <a href="https://medium.com/@parthshr370/how-to-get-started-with-pm4py-abebfa97d899" target="_blank" rel="noopener noreferrer" class="block">
                 <h2 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">How to Get started with PM4PY</h2>
                 <p class="text-sm text-[var(--text-muted)] mt-1">Process Mining • Data Science</p>
             </a>
@@ -233,7 +239,7 @@ permalink: /blogs/
     <h2 class="text-2xl font-bold text-[var(--primary)] mb-6">Some notes I made</h2>
     
     <div class="p-5 rounded-lg border border-[var(--border)] bg-[var(--surface)] hover:border-[var(--cyan)] transition-all">
-      <a href="https://github.com/parthshr370/Computer-Science-Notes" target="_blank" class="group block">
+      <a href="https://github.com/parthshr370/Computer-Science-Notes" target="_blank" rel="noopener noreferrer" class="group block">
         <h3 class="text-xl font-semibold text-[var(--cyan)] mb-3 group-hover:underline">Computer Science Notes ↗</h3>
       </a>
       <p class="text-[var(--text)] leading-relaxed">

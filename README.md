@@ -72,6 +72,16 @@ When publishing a newer post, update that section deliberately: promote the newe
 
 Use a variant that matches the post’s existing accent; do not flatten every card to the same hover color. Card interaction is intentionally limited to border/surface/shadow refinement—no scale, glow, or large movement.
 
+`blogs/index.html` uses a Writing intro, a Featured writing label, and a neutral All Posts archive. Keep the archive free of accent side rails; use neutral dividers and a subtle full-row cyan tint on hover/focus instead. External archived posts must include `rel="noopener noreferrer"` with `target="_blank"`.
+
+### Projects
+
+`projects/index.html` groups work into Featured, Built, and Contributions.
+
+- Use `project-card--primary`, `project-card--secondary`, `project-card--cyan`, or `project-card--gold` to preserve the established multicolor identity.
+- Keep project cards content-led: neutral borders at rest, then a subtle full-card accent border/tint/shadow on hover or focus. Never add permanent side rails, scale, glow, or large movement.
+- External project links must open in a new tab with `rel="noopener noreferrer"`.
+
 ### Posts
 
 `_layouts/post.html` provides two reading aids automatically:

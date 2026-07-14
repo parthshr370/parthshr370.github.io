@@ -7,76 +7,78 @@ nav_active: projects
 permalink: /projects/
 ---
 
-<section class="mt-8">
-
-  <h2 class="text-2xl font-bold text-[var(--primary)] mb-6">Projects</h2>
-
-  <div class="space-y-6">
-    <!-- Go Agent SDK -->
-    <div>
-      <a href="https://github.com/parthshr370/Go-agent-SDK" target="_blank" class="block group">
-        <h3 class="text-xl font-semibold text-[var(--link)] mb-1 group-hover:underline">Go Agent SDK ↗ <span class="text-sm text-[var(--gold)] font-normal">⭐ Featured</span></h3>
-      </a>
-      <p class="text-[var(--text-muted)]">
-        A comprehensive Golang SDK for building intelligent agents with tool-calling capabilities and memory management. Currently in active development. I'm writing a <a href="{{ '/blogs/how-i-built-my-own-langchain-from-scratch-in-go/' | relative_url }}" class="text-[var(--link)] hover:underline">blog series</a> documenting the entire build from scratch.
-      </p>
-    </div>
-
-    <!-- Simpletex -->
-    <div>
-      <a href="https://simpletex.xyz" target="_blank" class="block group">
-        <h3 class="text-xl font-semibold text-[var(--link)] mb-1 group-hover:underline">Simpletex.xyz ↗</h3>
-      </a>
-      <p class="text-[var(--text-muted)]">
-        LaTeX Resume Platform - Build professional resumes effortlessly with LaTeX. A streamlined platform for creating LaTeX resumes via form-filling or upload.
-      </p>
-    </div>
-
-    <!-- Memory Deep Researcher -->
-    <div>
-      <a href="https://github.com/parthshr370/Mem0-Deep-Researcher" target="_blank" class="block group">
-        <h3 class="text-xl font-semibold text-[var(--link)] mb-1 group-hover:underline">Memory Deep Researcher ↗</h3>
-      </a>
-      <p class="text-[var(--text-muted)]">
-        Deep research agent for memory databases. Uses competing agents to extract facts for the mem0 database and implements a ReWOO + ReAct loop.
-      </p>
-    </div>
-
-    <!-- Camel-AI -->
-    <div>
-      <a href="https://github.com/camel-ai/camel" target="_blank" class="block group">
-        <h3 class="text-xl font-semibold text-[var(--link)] mb-1 group-hover:underline">Camel-AI ↗</h3>
-        <p class="text-xs text-[var(--cyan)] font-semibold">Contribution</p>
-      </a>
-      <p class="text-[var(--text-muted)]">
-        Core contributor focused on MCPToolkit, toolkits, and other features. Regular contributions to the main product with cookbooks, features, etc.
-      </p>
-    </div>
-
-    <!-- mem0-mcp -->
-    <div>
-      <a href="https://github.com/mem0ai/mem0-mcp" target="_blank" class="block group">
-        <h3 class="text-xl font-semibold text-[var(--link)] mb-1 group-hover:underline">mem0-mcp ↗</h3>
-        <p class="text-xs text-[var(--cyan)] font-semibold mb-1">Contribution</p>
-      </a>
-      <p class="text-[var(--text-muted)] mb-2">
-        Revamped mem0-mcp for the new API v2, enabling complex filters and expanding LLM tool-calling capabilities.
-      </p>
-      <p class="text-[var(--text-muted)] text-sm">
-        Now compatible as a Python package, Docker endpoint, and Smithery.
-      </p>
-    </div>
-
-    <!-- mem0 -->
-    <div>
-      <a href="https://github.com/mem0ai/mem0" target="_blank" class="block group">
-        <h3 class="text-xl font-semibold text-[var(--link)] mb-1 group-hover:underline">mem0 ↗</h3>
-        <p class="text-xs text-[var(--cyan)] font-semibold">Contribution</p>
-      </a>
-      <p class="text-[var(--text-muted)]">
-        Self-improving memory for AI agents.
-      </p>
-    </div>
+<section class="projects-page mt-8" aria-labelledby="projects-heading">
+  <div class="projects-page__intro">
+    <h2 id="projects-heading" class="text-2xl font-bold text-[var(--primary)]">Projects</h2>
+    <p class="text-[var(--text-muted)] mt-2">Things I have built, plus open-source work I have contributed to.</p>
   </div>
 
+  <section class="projects-group" aria-labelledby="featured-project-heading">
+    <p id="featured-project-heading" class="projects-group__eyebrow text-[var(--gold)]">Featured</p>
+    <article class="project-card project-card--featured">
+      <div class="project-card__heading">
+        <a href="https://github.com/parthshr370/Go-agent-SDK" target="_blank" rel="noopener noreferrer" class="project-card__title">Go Agent SDK ↗</a>
+        <span class="project-tag project-tag--gold">Built</span>
+      </div>
+      <p class="project-card__description">A comprehensive Golang SDK for building intelligent agents with tool-calling capabilities and memory management. Currently in active development.</p>
+      <a href="{{ '/blogs/how-i-built-my-own-langchain-from-scratch-in-go/' | relative_url }}" class="project-card__detail">Read the build series →</a>
+    </article>
+  </section>
+
+  <section class="projects-group" aria-labelledby="built-projects-heading">
+    <div class="projects-group__header">
+      <h3 id="built-projects-heading" class="text-lg font-bold text-[var(--primary)]">Built</h3>
+      <span class="text-sm text-[var(--text-muted)]">Personal projects</span>
+    </div>
+    <div class="projects-list">
+      <article class="project-card project-card--secondary">
+        <div class="project-card__heading">
+          <a href="https://simpletex.xyz" target="_blank" rel="noopener noreferrer" class="project-card__title">Simpletex.xyz ↗</a>
+          <span class="project-tag project-tag--secondary">Built</span>
+        </div>
+        <p class="project-card__description">LaTeX Resume Platform — a streamlined platform for creating professional LaTeX resumes through forms or uploads.</p>
+      </article>
+
+      <article class="project-card project-card--cyan">
+        <div class="project-card__heading">
+          <a href="https://github.com/parthshr370/Mem0-Deep-Researcher" target="_blank" rel="noopener noreferrer" class="project-card__title">Memory Deep Researcher ↗</a>
+          <span class="project-tag project-tag--cyan">Built</span>
+        </div>
+        <p class="project-card__description">A deep-research agent for memory databases that uses competing agents to extract facts and implements a ReWOO + ReAct loop.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="projects-group" aria-labelledby="contributions-heading">
+    <div class="projects-group__header">
+      <h3 id="contributions-heading" class="text-lg font-bold text-[var(--primary)]">Contributions</h3>
+      <span class="text-sm text-[var(--text-muted)]">Open source</span>
+    </div>
+    <div class="projects-list">
+      <article class="project-card project-card--primary">
+        <div class="project-card__heading">
+          <a href="https://github.com/camel-ai/camel" target="_blank" rel="noopener noreferrer" class="project-card__title">Camel-AI ↗</a>
+          <span class="project-tag project-tag--primary">Contribution</span>
+        </div>
+        <p class="project-card__description">Core contributor focused on MCPToolkit, toolkits, and other features, with regular cookbook and product contributions.</p>
+      </article>
+
+      <article class="project-card project-card--cyan">
+        <div class="project-card__heading">
+          <a href="https://github.com/mem0ai/mem0-mcp" target="_blank" rel="noopener noreferrer" class="project-card__title">mem0-mcp ↗</a>
+          <span class="project-tag project-tag--cyan">Contribution</span>
+        </div>
+        <p class="project-card__description">Revamped mem0-mcp for API v2, enabling complex filters and expanding LLM tool-calling capabilities.</p>
+        <p class="project-card__note">Now compatible as a Python package, Docker endpoint, and Smithery.</p>
+      </article>
+
+      <article class="project-card project-card--gold">
+        <div class="project-card__heading">
+          <a href="https://github.com/mem0ai/mem0" target="_blank" rel="noopener noreferrer" class="project-card__title">mem0 ↗</a>
+          <span class="project-tag project-tag--gold">Contribution</span>
+        </div>
+        <p class="project-card__description">Self-improving memory for AI agents.</p>
+      </article>
+    </div>
+  </section>
 </section>
