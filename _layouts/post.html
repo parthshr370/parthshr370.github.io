@@ -4,18 +4,248 @@
     {% include head.html %}
   </head>
   <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10 bg-[var(--bg)] text-[var(--text)]">
-    <nav class="mt-6 flex justify-between items-center">
-      <a href="{{ '/blogs/' | relative_url }}" class="text-sm font-semibold hover:underline text-[var(--primary)]">← Back to Blogs</a>
-      {% include theme-toggle.html %}
-    </nav>
+    {% include nav.html %}
+    <div id="reading-progress" aria-hidden="true"></div>
     
     <article class="mt-8">
-      <h1 class="text-3xl font-bold mb-2 text-[var(--primary)]">{{ page.title }}</h1>
-      <p class="text-[var(--text-muted)] mb-6">{{ page.date_display }} • {{ page.read_time }}</p>
+      <header class="post-header">
+        <h1 class="text-3xl font-bold mb-2 text-[var(--primary)]">{{ page.title }}</h1>
+        <p class="text-[var(--text-muted)] mb-6">{{ page.date_display }} • {{ page.read_time }}</p>
+      </header>
 
       {{ content }}
 
       {% include socials.html %}
     </article>
+
+    <div class="post-page-nav" data-post-page-nav hidden>
+      <button
+        class="post-page-nav__trigger"
+        type="button"
+        aria-controls="post-page-nav-menu"
+        aria-expanded="false"
+      >
+        <span class="post-page-nav__context">On this page</span>
+        <span class="post-page-nav__label" data-post-page-nav-label></span>
+        <svg class="post-page-nav__chevron" aria-hidden="true" viewBox="0 0 12 8">
+          <path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+        </svg>
+      </button>
+      <div class="post-page-nav__menu" id="post-page-nav-menu" hidden>
+        <ul class="post-page-nav__list" data-post-page-nav-list></ul>
+      </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var progress = document.querySelector('#reading-progress');
+        if (!progress) {
+          return;
+        }
+
+        var progressFrame = null;
+        function updateProgress() {
+          progressFrame = null;
+          var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          var percentage = maxScroll > 0 ? Math.min(100, Math.max(0, (window.scrollY / maxScroll) * 100)) : 0;
+          progress.style.setProperty('--reading-progress', percentage + '%');
+        }
+
+        function requestProgressUpdate() {
+          if (progressFrame === null) {
+            progressFrame = window.requestAnimationFrame(updateProgress);
+          }
+        }
+
+        window.addEventListener('scroll', requestProgressUpdate, { passive: true });
+        window.addEventListener('resize', requestProgressUpdate);
+        requestProgressUpdate();
+      });
+    </script>
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var article = document.querySelector('article');
+        var control = document.querySelector('[data-post-page-nav]');
+        var trigger = control && control.querySelector('.post-page-nav__trigger');
+        var menu = control && control.querySelector('#post-page-nav-menu');
+        var list = control && control.querySelector('[data-post-page-nav-list]');
+        var label = control && control.querySelector('[data-post-page-nav-label]');
+
+        if (!article || !control || !trigger || !menu || !list || !label) {
+          return;
+        }
+
+        var tocHeading = null;
+        var articleHeadings = article.querySelectorAll('h2');
+        for (var headingIndex = 0; headingIndex < articleHeadings.length; headingIndex += 1) {
+          var candidate = articleHeadings[headingIndex];
+          var candidateText = candidate.textContent.replace(/\s+/g, ' ').trim().toLowerCase();
+          if (candidateText === 'table of contents') {
+            tocHeading = candidate;
+            break;
+          }
+        }
+
+        var headings = [];
+        var allSectionHeadings = article.querySelectorAll('h2[id], h3[id]');
+        for (var sectionIndex = 0; sectionIndex < allSectionHeadings.length; sectionIndex += 1) {
+          var sectionHeading = allSectionHeadings[sectionIndex];
+          var sectionTitle = sectionHeading.textContent.replace(/\s+/g, ' ').trim();
+          if (sectionHeading !== tocHeading && sectionTitle) {
+            headings.push({
+              element: sectionHeading,
+              title: sectionTitle
+            });
+          }
+        }
+
+        if (headings.length < 2) {
+          return;
+        }
+
+        var navigationItems = [];
+        var fragment = document.createDocumentFragment();
+        for (var itemIndex = 0; itemIndex < headings.length; itemIndex += 1) {
+          var itemHeading = headings[itemIndex];
+          var item = document.createElement('li');
+          var link = document.createElement('a');
+
+          item.className = 'post-page-nav__item post-page-nav__item--' + itemHeading.element.tagName.toLowerCase();
+          link.className = 'post-page-nav__link';
+          link.setAttribute('href', '#' + itemHeading.element.id);
+          link.textContent = itemHeading.title;
+          item.appendChild(link);
+          fragment.appendChild(item);
+          navigationItems.push(link);
+        }
+        list.appendChild(fragment);
+
+        var activeIndex = -1;
+        function setActiveHeading(nextIndex) {
+          if (nextIndex === activeIndex) {
+            return;
+          }
+
+          if (activeIndex !== -1) {
+            navigationItems[activeIndex].classList.remove('is-current');
+            navigationItems[activeIndex].removeAttribute('aria-current');
+          }
+
+          var currentItem = headings[nextIndex];
+          var currentLink = navigationItems[nextIndex];
+          currentLink.classList.add('is-current');
+          currentLink.setAttribute('aria-current', 'location');
+          label.textContent = currentItem.title;
+          trigger.setAttribute('aria-label', 'On this page. Current section: ' + currentItem.title);
+          activeIndex = nextIndex;
+        }
+
+        function setMenuOpen(isOpen) {
+          menu.hidden = !isOpen;
+          trigger.setAttribute('aria-expanded', String(isOpen));
+          control.classList.toggle('is-open', isOpen);
+        }
+
+        function closeMenu(restoreFocus) {
+          if (menu.hidden) {
+            return;
+          }
+
+          setMenuOpen(false);
+          if (restoreFocus) {
+            trigger.focus();
+          }
+        }
+
+        var tocRegion = tocHeading && tocHeading.closest('aside, details, div, section');
+        var revealTarget = tocRegion && article.contains(tocRegion)
+          ? tocRegion
+          : article.querySelector('.post-header');
+
+        if (!revealTarget) {
+          return;
+        }
+
+        var revealObserver = new IntersectionObserver(function (entries) {
+          var entry = entries[0];
+          var hasPassedTarget = entry.boundingClientRect.bottom <= 0;
+
+          control.hidden = !hasPassedTarget;
+          if (!hasPassedTarget) {
+            closeMenu(false);
+          }
+        });
+        revealObserver.observe(revealTarget);
+
+        function updateControlVisibility() {
+          var hasPassedTarget = revealTarget.getBoundingClientRect().bottom <= 0;
+          control.hidden = !hasPassedTarget;
+          if (!hasPassedTarget) {
+            closeMenu(false);
+          }
+        }
+
+        function updateActiveHeading() {
+          var readingLine = window.innerHeight * 0.28;
+          var nextIndex = 0;
+
+          for (var index = 0; index < headings.length; index += 1) {
+            if (headings[index].element.getBoundingClientRect().top <= readingLine) {
+              nextIndex = index;
+            } else {
+              break;
+            }
+          }
+
+          setActiveHeading(nextIndex);
+        }
+
+        var scrollFrame = null;
+        function commitReadingPosition() {
+          scrollFrame = null;
+          updateControlVisibility();
+          updateActiveHeading();
+        }
+
+        function requestReadingPosition() {
+          if (scrollFrame !== null) {
+            return;
+          }
+
+          scrollFrame = window.requestAnimationFrame(commitReadingPosition);
+        }
+
+        trigger.addEventListener('click', function () {
+          setMenuOpen(menu.hidden);
+        });
+
+        list.addEventListener('click', function (event) {
+          if (event.target.closest('.post-page-nav__link')) {
+            closeMenu(false);
+          }
+        });
+
+        document.addEventListener('click', function (event) {
+          if (!control.contains(event.target)) {
+            closeMenu(false);
+          }
+        });
+
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape' && !menu.hidden) {
+            event.preventDefault();
+            closeMenu(true);
+          }
+        });
+
+        window.addEventListener('scroll', requestReadingPosition, { passive: true });
+        window.addEventListener('resize', requestReadingPosition);
+        updateActiveHeading();
+        requestReadingPosition();
+      });
+    </script>
+
+
   </body>
 </html>
