@@ -5,7 +5,7 @@
     {% else %}
     <p class="text-xl font-bold text-[var(--text)]">{{ site.title }}</p>
     {% endif %}
-    <div class="mt-3 flex flex-wrap gap-5">
+    <div class="mt-5 flex flex-wrap gap-5">
       <a href="{{ '/' | relative_url }}"{% if page.nav_active == 'home' %} aria-current="page"{% endif %}>Home</a>
       <a href="{{ '/blogs/' | relative_url }}"{% if page.nav_active == 'blogs' %} aria-current="page"{% endif %}>Blogs</a>
       <a href="{{ '/projects/' | relative_url }}"{% if page.nav_active == 'projects' %} aria-current="page"{% endif %}>Projects</a>

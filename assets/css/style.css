@@ -136,11 +136,13 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Primary navigation: muted links, current page in primary */
+/* Primary navigation: muted links, current page in primary. The 40px tap area is
+   cancelled out with negative block margin so it adds no visual space. */
 .site-nav a {
     display: inline-flex;
     align-items: center;
     min-height: 40px;
+    margin-block: -10px;
     color: var(--text-muted) !important;
     text-decoration: none;
 }
