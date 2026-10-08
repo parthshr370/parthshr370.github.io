@@ -589,12 +589,10 @@ h3[id] {
     transition: width 100ms linear;
 }
 
-/* Viewport frame: thin fixed border with corner ticks. .frame__gutter strips frost the
-   space outside the border; .frame__edge strips blur content as it nears the top and
-   bottom lines, ramping from full blur at the line to none --frame-edge inside it. */
+/* Viewport frame: thin fixed border with corner ticks. Content stays sharp inside the
+   border; .frame__gutter strips blur whatever scrolls through the space outside it. */
 :root {
     --frame-inset: 20px;
-    --frame-edge: 40px;
 }
 
 .frame {
@@ -607,30 +605,15 @@ h3[id] {
 
 .frame__gutter {
     position: fixed;
-    background: color-mix(in srgb, var(--bg) 82%, transparent);
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 55%, transparent);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
 }
 
 .frame__gutter--top { top: 0; left: 0; right: 0; height: var(--frame-inset); }
 .frame__gutter--bottom { bottom: 0; left: 0; right: 0; height: var(--frame-inset); }
 .frame__gutter--left { top: var(--frame-inset); bottom: var(--frame-inset); left: 0; width: var(--frame-inset); }
 .frame__gutter--right { top: var(--frame-inset); bottom: var(--frame-inset); right: 0; width: var(--frame-inset); }
-
-.frame__edge {
-    position: absolute;
-    right: 0;
-    left: 0;
-    height: var(--frame-edge);
-    background: linear-gradient(var(--bg), color-mix(in srgb, var(--bg) 0%, transparent));
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-    -webkit-mask-image: linear-gradient(#000 20%, transparent);
-    mask-image: linear-gradient(#000 20%, transparent);
-}
-
-.frame__edge--top { top: 0; }
-.frame__edge--bottom { bottom: 0; transform: scaleY(-1); }
 
 .frame__corner {
     position: absolute;
@@ -647,7 +630,6 @@ h3[id] {
 @media (max-width: 640px) {
     :root {
         --frame-inset: 8px;
-        --frame-edge: 32px;
     }
 
     .writing-list__link {
