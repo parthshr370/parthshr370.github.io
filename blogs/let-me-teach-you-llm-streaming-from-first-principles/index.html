@@ -15,7 +15,7 @@ prism:
   <strong>Go Agent SDK series - Part 3</strong>
 </p>
 
-<img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/constableparhammill.png' | relative_url }}" alt="LLM streaming from first principles" class="w-full rounded-xl mb-8 border border-[var(--border)]" />
+<img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/constableparhammill.png' | relative_url }}" alt="John Constable's painting Parham Mill: water pours off a wooden mill wheel into a stream beside an old stone mill, under a cloudy sky." class="w-full rounded-xl mb-8 border border-[var(--border)]" />
 
 <p class="mb-6 text-sm text-[var(--text-muted)]">
   <strong>Prerequisites:</strong> Part one of this series (<a href="{{ '/blogs/how-i-built-my-own-langchain-from-scratch-in-go/' | relative_url }}" class="text-[var(--link)] hover:underline">structs, messages, and history</a>) and part two (<a href="{{ '/blogs/how-i-built-tool-calling-engine-for-my-agent-sdk/' | relative_url }}" class="text-[var(--link)] hover:underline">tool calling</a>). This post builds on both and focuses on the piece that makes agents feel alive, <strong>streaming</strong>.
@@ -29,7 +29,7 @@ prism:
   <h2 class="text-xl font-bold mb-4 text-[var(--primary)]">Table of contents</h2>
   <details open class="group border border-[var(--border)] rounded-lg p-3 bg-[var(--bg)]">
     <summary class="cursor-pointer list-none flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
-      <span class="transition-transform group-open:rotate-90">></span>
+      <span class="transition-transform group-open:rotate-90" aria-hidden="true">></span>
       <span>Table of contents</span>
     </summary>
     <ul class="mt-4 space-y-2 pl-6 border-l border-[var(--border)] text-sm">
@@ -78,14 +78,15 @@ prism:
   <strong>Streaming solves both.</strong> The user side of giving feedback instantly, and the technical bottleneck where nothing is visible until the whole response is ready. Instead of waiting for the LLM to finish its entire thought before showing you anything, you get <em>tokens as they are generated</em>. Same answer, but you see it build up in real time.
 </p>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-  <img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/non streaming 1 .png' | relative_url }}" alt="Non-streaming waits and returns the full response at once" class="w-full rounded-xl border border-[var(--border)] bg-white" />
-  <img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/streaming 1.png' | relative_url }}" alt="Streaming returns tokens as they are generated" class="w-full rounded-xl border border-[var(--border)] bg-white" />
-</div>
-
-<p class="mb-6 text-sm text-[var(--text-muted)] leading-relaxed">
-  <strong>Fig 1:</strong> Non-streaming waits for the full answer, while streaming starts returning tokens as soon as the model generates them.
-</p>
+<figure>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/non streaming 1 .png' | relative_url }}" alt="Non-streaming waits and returns the full response at once" class="w-full rounded-xl border border-[var(--border)] bg-white" />
+    <img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/streaming 1.png' | relative_url }}" alt="Streaming returns tokens as they are generated" class="w-full rounded-xl border border-[var(--border)] bg-white" />
+  </div>
+  <figcaption class="mb-6 text-sm text-[var(--text-muted)] leading-relaxed">
+    <strong>Fig 1:</strong> Non-streaming waits for the full answer, while streaming starts returning tokens as soon as the model generates them.
+  </figcaption>
+</figure>
 
 <p class="mb-6 leading-relaxed">
   <strong><em>Let's contrast and compare.</em></strong>
@@ -218,11 +219,12 @@ data: [DONE]</code></pre>
   Let's map out all the major blocks we need to build on.
 </p>
 
-<img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/streaming-sse-pipeline.excalidraw.png' | relative_url }}" alt="SSE data lines become StreamEvents and then a final llm.Message" class="w-full rounded-xl mb-3 border border-[var(--border)]" />
-
-<p class="mb-6 text-sm text-[var(--text-muted)] leading-relaxed">
-  <strong>Fig 2:</strong> Streaming data comes in, the useful bits are extracted, fragments move into a buffer, and the final message gets popped out at the end.
-</p>
+<figure>
+  <img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/streaming-sse-pipeline.excalidraw.png' | relative_url }}" alt="SSE data lines become StreamEvents and then a final llm.Message" class="w-full rounded-xl mb-3 border border-[var(--border)]" />
+  <figcaption class="mb-6 text-sm text-[var(--text-muted)] leading-relaxed">
+    <strong>Fig 2:</strong> Streaming data comes in, the useful bits are extracted, fragments move into a buffer, and the final message gets popped out at the end.
+  </figcaption>
+</figure>
 
 <p class="mb-6 leading-relaxed">
   The path is simple once you see it laid out. <strong>Streaming data</strong> comes in, we strip out the important details, move those pieces into a buffer <span class="paren-note">(the Accumulator)</span>, and then pop out one final message that the rest of the SDK can understand.
@@ -484,11 +486,12 @@ data: [DONE]</code></pre>
   <code>RunStream()</code> runs two nested loops, and each has a distinct job:
 </p>
 
-<img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/streaming-runstream-loop.excalidraw.png' | relative_url }}" alt="RunStream uses an outer LLM-call loop and an inner Recv loop" class="w-full rounded-xl mb-3 border border-[var(--border)]" />
-
-<p class="mb-6 text-sm text-[var(--text-muted)] leading-relaxed">
-  <strong>Fig 3:</strong> <code>RunStream()</code> has an outer loop for LLM calls and an inner loop for reading stream events until the response is complete.
-</p>
+<figure>
+  <img src="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/streaming-runstream-loop.excalidraw.png' | relative_url }}" alt="RunStream uses an outer LLM-call loop and an inner Recv loop" class="w-full rounded-xl mb-3 border border-[var(--border)]" />
+  <figcaption class="mb-6 text-sm text-[var(--text-muted)] leading-relaxed">
+    <strong>Fig 3:</strong> <code>RunStream()</code> has an outer loop for LLM calls and an inner loop for reading stream events until the response is complete.
+  </figcaption>
+</figure>
 
 <pre><code class="language-go">// outer loop: one iteration per LLM call
 for {

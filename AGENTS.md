@@ -51,12 +51,13 @@ This is a static site with no automated tests. Verify changes by:
 ├── projects/
 │   └── index.html         # Projects page (open source + personal projects)
 ├── _layouts/
-│   ├── default.html       # Base layout (nav + content container)
-│   └── post.html          # Blog post layout (back button + article + socials)
+│   ├── default.html       # Base layout (skip link, nav, <main id="main-content" class="site-page">)
+│   └── post.html          # Blog post layout (skip link, nav, <main> > article.post-article + socials, On this page nav)
 ├── _includes/
 │   ├── head.html          # Meta tags, Tailwind CDN, theme JS, Prism.js loading
-│   ├── nav.html           # Navigation bar (logo + Home/Blogs/Projects links)
-│   ├── theme-toggle.html  # Theme switcher button (moon/sun icons)
+│   ├── frame.html         # Fixed decorative viewport border with corner ticks
+│   ├── nav.html           # Primary nav (aria-label="Primary"): home h1 or brand line + Home/Blogs/Projects links
+│   ├── theme-toggle.html  # Theme switcher button (type="button", destination-theme aria-label, aria-hidden icons)
 │   └── socials.html       # Footer social links for blog posts
 └── assets/
     ├── css/style.css      # Theme variables + custom CSS + Prism colors
@@ -88,8 +89,9 @@ prism:
 
 ### New Project
 Add entries in both `index.html` (Projects section) and `projects/index.html`:
-- Use pattern: `<a href="...">title</a>` with `<p class="text-[var(--text-muted)]">description</p>`
-- External links: include `↗` symbol in title and `target="_blank"`
+- Homepage: `<a href="..." target="_blank" rel="noopener noreferrer" class="external-link group block"><h3 ...>Title <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></h3></a>` followed by one short, outcome-led `<p>` description; keep feature inventories in the repository README
+- Projects page: `<h3 class="project-card__name"><a ... class="project-card__title external-link">` inside `.project-card__heading`, plus a plain `<span class="project-tag">Built|Contribution</span>`; no per-card color variants
+- External links: `target="_blank"`, `rel="noopener noreferrer"`, visible `↗` in `aria-hidden` span, and an `sr-only` "(opens in a new tab)" cue
 - Featured projects on homepage get `⭐ Featured` badge
 
 ## Code Style Guidelines
@@ -104,15 +106,16 @@ Add entries in both `index.html` (Projects section) and `projects/index.html`:
 - Spacing: Use Tailwind scale (`mt-8` `mb-6` `p-4`)
 - Borders: `border border-[var(--border)]`
 - Links: `text-[var(--link)] hover:text-[var(--link-hover)]`
-- Bold text in `<article>`: Use CSS variable `--bold` (automatically colored per theme)
-- Italic text in `<article>`: Use CSS variable `--italic`
+- Off-site links on non-post pages: add `class="external-link"` (muted teal `--external-link` in orange, scoped to `.site-page`). Never use it inside post bodies.
+- Bold text in `.post-article`: Use CSS variable `--bold` (automatically colored per theme)
+- Italic text in `.post-article`: Use CSS variable `--italic`
 - Parenthetical side-notes can use `<span class="paren-note">(...)</span>` when they carry meaningful context
 - Raw technical names in prose should usually be inline code when they are important types, functions, fields, or literals
 
 ### Jekyll/Liquid
 - Always use `{{ '/path/' | relative_url }}` for internal links (not absolute paths)
 - Front matter is YAML, ensure proper indentation (2 spaces)
-- Use `site.title`, `page.title`, `page.nav_title`, `page.nav_active`, `page.date_display`, `page.read_time`
+- Use `site.title`, `page.title`, `page.nav_active`, `page.date_display`, `page.read_time`
 
 ### Code Blocks
 - Wrap in `<pre><code class="language-python">` (add appropriate language class)
@@ -144,9 +147,9 @@ Add entries in both `index.html` (Projects section) and `projects/index.html`:
 ### Navigation Active States
 Set in front matter:
 ```yaml
-nav_title: "Page Title"        # Shown in nav (default: site.title)
-nav_active:                    # Highlights nav link (home|blogs|projects, or omit)
+nav_active:                    # home|blogs|projects, or omit
 ```
+`nav_active` adds `aria-current="page"` to the matching link, which renders `--primary` with an underline; other nav links are `--text-muted`. `nav_active: home` also renders the site name as the page `h1`; every other page shows a plain brand line and must supply its own `h1` in content.
 
 ## Theme System
 
@@ -172,7 +175,7 @@ Visual intent:
 - inline code should not look dull
 - comments in code should recede from real code
 - syntax lanes should separate comments / strings / functions / keywords clearly
-- code blocks should feel like a dark slate surface, not dead black
+- code blocks should feel like a warm charcoal surface, not dead black; the orange theme uses only orange shades plus neutrals
 
 ## Important Patterns
 
@@ -184,8 +187,10 @@ Visual intent:
 - End with socials via `{% include socials.html %}`
 
 ### Content Pages (Home, Blogs, Projects)
-- Use `layout: default` for main pages
+- Use `layout: default` for main pages; it wraps content in `<main id="main-content" class="site-page">`
 - Content wrapped in `<section class="mt-8">` or similar
+- Heading order: one `h1` per page (homepage name in nav, otherwise the page title in content), `h2` for sections, `h3` for card/item titles; keep existing size classes when changing levels
+- Metadata (series labels, dates, read times, tags) uses `--text-muted`
 - Use consistent spacing: `space-y-4`, `space-y-6`, `space-y-8`
 
 ### Lists
@@ -194,19 +199,22 @@ Visual intent:
 - Clean lists: `<ul class="list-none space-y-4">`
 
 ### Externally Hosted Content
-Some blogs link to Medium (https://medium.com/@parthshr370/...). These are listed in `blogs/index.html` "All Posts" collapsible section with `target="_blank"`.
+Some blogs link to Medium (https://medium.com/@parthshr370/...). These are listed in `blogs/index.html` "All Posts" collapsible section with `target="_blank"`, `rel="noopener noreferrer"`, `class="external-link"`, and a visible `↗`. The "All posts ↓" link beside Featured writing jumps to `#all-posts`.
 
 ## Build Exclusions
 From `_config.yml` exclude: `Gemfile`, `Gemfile.lock`, `README.md`, `COLORSCHEME.md`, `ORANGE_THEME.md`, `excalidraw.log`, `node_modules`, `vendor` (not deployed to GitHub Pages)
 
 ## Responsive Design
-- Mobile: `w-full max-w-[90%]` (90% width)
-- Desktop: `md:w-[43%]` (43% width, ~660px)
+- Column: `w-[90%] max-w-[42rem]` on `<body>` in both layouts (~670px max)
+- Viewport frame inset: `--frame-inset` (20px desktop, 8px under 640px)
 - Use Tailwind responsive prefixes: `md:`, `lg:` for breakpoints
 - Navigation uses `flex-wrap` for small screens
 
 ## Accessibility
-- Add `alt` attributes to all images
-- Use semantic HTML (`<article>`, `<section>`, `<nav>`, `<h1>`-`<h3>`)
+- Add `alt` attributes to all images; describe artwork, use `alt=""` only for purely decorative images
+- Use semantic HTML (`<main>`, `<article>`, `<section>`, `<nav>`, `<figure>`/`<figcaption>`, `<h1>`-`<h3>`)
+- Both layouts start with a `.skip-link` to `#main-content`; nav is `aria-label="Primary"`, the post section control is `<nav aria-label="On this page">`
+- Decorative glyphs (`↗`, TOC `>` chevrons, icons) get `aria-hidden="true"`
+- Nav links, theme button, and mobile "On this page" menu links have a 40px minimum height
 - Links have hover states and underlines
 - Color contrast meets WCAG standards in both themes

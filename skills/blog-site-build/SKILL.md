@@ -149,13 +149,12 @@ Examples:
 ### Syntax / color intent
 
 Use the site's current theme, but preserve this visual separation:
-- comments: muted grey
-- keywords: orange
-- properties/identifiers: blue
-- functions/classes: teal
-- strings: green or warm readable accent depending on context
-- numbers/secondary literals: gold
-- code background: dark slate, not dead black
+- comments: muted warm grey
+- keywords: deep orange
+- properties/identifiers/numbers: warm off-white
+- functions/classes: mid orange
+- strings: light orange
+- code background: warm charcoal, not dead black
 
 Inline code should not look dull. It should feel distinct from body text.
 
@@ -165,17 +164,15 @@ These are the palette anchors. Use CSS variables, not raw hex in HTML.
 
 | Name | Hex | CSS Variable |
 |------|-----|-------------|
-| orange | `#EC5B2B` | `--primary` |
-| peach | `#EE7948` | `--secondary` |
-| gold | `#E5C07B` | `--gold` |
-| teal | `#56B6C2` | `--cyan` |
-| blue | `#6BA1E6` | `--link` |
-| green | `#78D278` | `--code-string` |
-| cream | `#FFF7F1` | `--accent` |
-| muted grey | `#6C6C6C` | `--muted-code` |
+| orange-deep | `#EC5B2B` | `--primary`, `--bold`, `--code-keyword` |
+| orange-mid | `#F28A5B` | `--link`, `--cyan`, `--code-function` |
+| orange-light | `#F2B48C` | `--italic`, `--gold`, `--code-string` (paren-notes, dates) |
+| orange-pale | `#F7CDB0` | `--code-inline-text` |
+| warm off-white | `#E6DCD3` | `--code-property`, `--code-number` |
+| muted grey | `#6E635B` | `--muted-code` |
 | dark bg | `#0A0A0A` | `--bg` |
 | surface | `#060606` | `--surface` |
-| code block bg | `#161B22` | `--code-block-bg` |
+| code block bg | `#14110F` | `--code-block-bg` |
 
 Use these as reference, not as a license to repaint the site.
 Full variable table: see COLORSCHEME.md.

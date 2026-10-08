@@ -2,23 +2,22 @@
 layout: default
 title: Projects - Parth Sharma
 description: "Open source projects and contributions — Go Agent SDK, Simpletex, Mem0, Camel-AI, and more."
-nav_title: Projects
 nav_active: projects
 permalink: /projects/
 ---
 
 <section class="projects-page mt-8" aria-labelledby="projects-heading">
   <div class="projects-page__intro">
-    <h2 id="projects-heading" class="text-2xl font-bold text-[var(--primary)]">Projects</h2>
+    <h1 id="projects-heading" class="text-2xl font-bold text-[var(--primary)]">Projects</h1>
     <p class="text-[var(--text-muted)] mt-2">Things I have built, plus open-source work I have contributed to.</p>
   </div>
 
   <section class="projects-group" aria-labelledby="featured-project-heading">
-    <p id="featured-project-heading" class="projects-group__eyebrow text-[var(--gold)]">Featured</p>
+    <h2 id="featured-project-heading" class="projects-group__eyebrow">Featured</h2>
     <article class="project-card project-card--featured">
       <div class="project-card__heading">
-        <a href="https://github.com/parthshr370/Go-agent-SDK" target="_blank" rel="noopener noreferrer" class="project-card__title">Go Agent SDK ↗</a>
-        <span class="project-tag project-tag--gold">Built</span>
+        <h3 class="project-card__name"><a href="https://github.com/parthshr370/Go-agent-SDK" target="_blank" rel="noopener noreferrer" class="project-card__title external-link">Go Agent SDK <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></h3>
+        <span class="project-tag">Built</span>
       </div>
       <p class="project-card__description">A comprehensive Golang SDK for building intelligent agents with tool-calling capabilities and memory management. Currently in active development.</p>
       <a href="{{ '/blogs/how-i-built-my-own-langchain-from-scratch-in-go/' | relative_url }}" class="project-card__detail">Read the build series →</a>
@@ -27,22 +26,38 @@ permalink: /projects/
 
   <section class="projects-group" aria-labelledby="built-projects-heading">
     <div class="projects-group__header">
-      <h3 id="built-projects-heading" class="text-lg font-bold text-[var(--primary)]">Built</h3>
+      <h2 id="built-projects-heading" class="text-lg font-bold text-[var(--primary)]">Built</h2>
       <span class="text-sm text-[var(--text-muted)]">Personal projects</span>
     </div>
     <div class="projects-list">
-      <article class="project-card project-card--secondary">
+      <article class="project-card">
         <div class="project-card__heading">
-          <a href="https://simpletex.xyz" target="_blank" rel="noopener noreferrer" class="project-card__title">Simpletex.xyz ↗</a>
-          <span class="project-tag project-tag--secondary">Built</span>
+          <h3 class="project-card__name"><a href="https://github.com/parthshr370/tempest" target="_blank" rel="noopener noreferrer" class="project-card__title external-link">Tempest <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></h3>
+          <span class="project-tag">Built</span>
+        </div>
+        <p class="project-card__description">A fast coding agent in pure Go: one static binary, zero runtime deps, direct Anthropic/OpenAI/Gemini/OpenRouter providers, hash-anchored edits, resumable sessions, tiered permissions, and subagents.</p>
+      </article>
+
+      <article class="project-card">
+        <div class="project-card__heading">
+          <h3 class="project-card__name"><a href="https://github.com/parthshr370/blog2kindle" target="_blank" rel="noopener noreferrer" class="project-card__title external-link">blog2kindle <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></h3>
+          <span class="project-tag">Built</span>
+        </div>
+        <p class="project-card__description">Turns any blog link into a clean EPUB, AZW3, PDF, or MOBI and pushes it to a Kindle, with optional LLM cleanup before Calibre conversion.</p>
+      </article>
+
+      <article class="project-card">
+        <div class="project-card__heading">
+          <h3 class="project-card__name"><a href="https://simpletex.xyz" target="_blank" rel="noopener noreferrer" class="project-card__title external-link">Simpletex.xyz <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></h3>
+          <span class="project-tag">Built</span>
         </div>
         <p class="project-card__description">LaTeX Resume Platform — a streamlined platform for creating professional LaTeX resumes through forms or uploads.</p>
       </article>
 
-      <article class="project-card project-card--cyan">
+      <article class="project-card">
         <div class="project-card__heading">
-          <a href="https://github.com/parthshr370/Mem0-Deep-Researcher" target="_blank" rel="noopener noreferrer" class="project-card__title">Memory Deep Researcher ↗</a>
-          <span class="project-tag project-tag--cyan">Built</span>
+          <h3 class="project-card__name"><a href="https://github.com/parthshr370/Mem0-Deep-Researcher" target="_blank" rel="noopener noreferrer" class="project-card__title external-link">Memory Deep Researcher <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></h3>
+          <span class="project-tag">Built</span>
         </div>
         <p class="project-card__description">A deep-research agent for memory databases that uses competing agents to extract facts and implements a ReWOO + ReAct loop.</p>
       </article>
@@ -51,31 +66,31 @@ permalink: /projects/
 
   <section class="projects-group" aria-labelledby="contributions-heading">
     <div class="projects-group__header">
-      <h3 id="contributions-heading" class="text-lg font-bold text-[var(--primary)]">Contributions</h3>
+      <h2 id="contributions-heading" class="text-lg font-bold text-[var(--primary)]">Contributions</h2>
       <span class="text-sm text-[var(--text-muted)]">Open source</span>
     </div>
     <div class="projects-list">
-      <article class="project-card project-card--primary">
+      <article class="project-card">
         <div class="project-card__heading">
-          <a href="https://github.com/camel-ai/camel" target="_blank" rel="noopener noreferrer" class="project-card__title">Camel-AI ↗</a>
-          <span class="project-tag project-tag--primary">Contribution</span>
+          <h3 class="project-card__name"><a href="https://github.com/camel-ai/camel" target="_blank" rel="noopener noreferrer" class="project-card__title external-link">Camel-AI <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></h3>
+          <span class="project-tag">Contribution</span>
         </div>
         <p class="project-card__description">Core contributor focused on MCPToolkit, toolkits, and other features, with regular cookbook and product contributions.</p>
       </article>
 
-      <article class="project-card project-card--cyan">
+      <article class="project-card">
         <div class="project-card__heading">
-          <a href="https://github.com/mem0ai/mem0-mcp" target="_blank" rel="noopener noreferrer" class="project-card__title">mem0-mcp ↗</a>
-          <span class="project-tag project-tag--cyan">Contribution</span>
+          <h3 class="project-card__name"><a href="https://github.com/mem0ai/mem0-mcp" target="_blank" rel="noopener noreferrer" class="project-card__title external-link">mem0-mcp <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></h3>
+          <span class="project-tag">Contribution</span>
         </div>
         <p class="project-card__description">Revamped mem0-mcp for API v2, enabling complex filters and expanding LLM tool-calling capabilities.</p>
         <p class="project-card__note">Now compatible as a Python package, Docker endpoint, and Smithery.</p>
       </article>
 
-      <article class="project-card project-card--gold">
+      <article class="project-card">
         <div class="project-card__heading">
-          <a href="https://github.com/mem0ai/mem0" target="_blank" rel="noopener noreferrer" class="project-card__title">mem0 ↗</a>
-          <span class="project-tag project-tag--gold">Contribution</span>
+          <h3 class="project-card__name"><a href="https://github.com/mem0ai/mem0" target="_blank" rel="noopener noreferrer" class="project-card__title external-link">mem0 <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></h3>
+          <span class="project-tag">Contribution</span>
         </div>
         <p class="project-card__description">Self-improving memory for AI agents.</p>
       </article>

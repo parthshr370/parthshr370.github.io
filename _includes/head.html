@@ -94,6 +94,10 @@
   function updateThemeIcon(currentTheme) {
     const moonIcon = document.getElementById('moon-icon');
     const sunIcon = document.getElementById('sun-icon');
+    const toggle = document.getElementById('theme-toggle');
+    const label = currentTheme === 'orange' ? 'Switch to Mocha theme' : 'Switch to Orange theme';
+    toggle?.setAttribute('aria-label', label);
+    toggle?.setAttribute('title', label);
     if (currentTheme === 'orange') {
       moonIcon?.classList.add('hidden');
       sunIcon?.classList.remove('hidden');

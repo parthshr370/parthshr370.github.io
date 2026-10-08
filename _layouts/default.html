@@ -3,8 +3,12 @@
   <head>
     {% include head.html %}
   </head>
-  <body class="w-full max-w-[90%] md:w-[43%] mx-auto pb-10 bg-[var(--bg)] text-[var(--text)]">
+  <body class="w-[90%] max-w-[42rem] mx-auto pb-16 bg-[var(--bg)] text-[var(--text)]">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    {% include frame.html %}
     {% include nav.html %}
-    {{ content }}
+    <main id="main-content" class="site-page">
+      {{ content }}
+    </main>
   </body>
 </html>
