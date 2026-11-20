@@ -1,0 +1,278 @@
+---
+layout: post
+title: "What 1.5 years of building agents taught me: loops, tools, and specs"
+description: "Every agent harness is a while loop calling a model, a few tools, and solid backend fundamentals. What I learned in 1.5 years of agentic engineering, and why specs are where the real learning is."
+date_display: "November 20, 2026"
+read_time: "9 min read"
+permalink: /blogs/its-all-a-while-loop/
+image: /blogs/its-all-a-while-loop/las-hilanderas.jpg
+prism:
+  - python
+---
+
+<img src="{{ '/blogs/its-all-a-while-loop/las-hilanderas.jpg' | relative_url }}" alt="Diego Velázquez's painting Las Hilanderas: women spin and wind wool in a dim workshop around a turning spinning wheel, while a bright mythological tapestry scene plays out in the room behind them." class="w-full rounded-xl mb-8 border border-[var(--border)]" />
+
+<div class="mb-10">
+  <h2 class="text-xl font-bold mb-4 text-[var(--primary)]">Table of contents</h2>
+  <details open class="group border border-[var(--border)] rounded-lg p-3 bg-[var(--bg)]">
+    <summary class="cursor-pointer list-none flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+      <span class="transition-transform group-open:rotate-90" aria-hidden="true">></span>
+      <span>Table of contents</span>
+    </summary>
+    <ul class="mt-4 space-y-2 pl-6 border-l border-[var(--border)] text-sm">
+      <li><a href="#its-all-a-while-loop" class="hover:underline text-[var(--link)]">It's all a while loop</a></li>
+      <li><a href="#its-also-just-a-tool-call" class="hover:underline text-[var(--link)]">It's also just a tool call</a></li>
+      <li><a href="#the-subagent-dilemma" class="hover:underline text-[var(--link)]">The subagent dilemma</a></li>
+      <li><a href="#sadly-its-still-backend-engineering" class="hover:underline text-[var(--link)]">Sadly, it's still backend engineering</a></li>
+      <li><a href="#old-is-where-the-gold-is" class="hover:underline text-[var(--link)]">How to learn: old is where the gold is</a></li>
+    </ul>
+  </details>
+</div>
+
+<p class="mb-6 leading-relaxed">
+  I actually don't know how this blog will end, but I will try my best to condense all my ideas into <strong>one train of thought</strong> that anyone needs to catch up in this agentic race.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  You don't need to follow the latest trends, the latest model, or the latest <em>"this will take my job"</em> release. All these agentic trends are <strong>reheated, rehashed versions of the same dish</strong>, and I will present it the way I like to digest this influx of agent slop.
+</p>
+
+<p class="mb-6 pl-4 border-l-2 border-[var(--border)] text-[var(--text-muted)]">
+  You can ask your Claude to explain this blog to you. Just ask it to create a few Excalidraw diagrams of the while loop that <code>run()</code> functions use across harnesses, and a bit about how tools work internally <span class="paren-note">(which you can also learn from <a href="{{ '/blogs/how-i-built-tool-calling-engine-for-my-agent-sdk/' | relative_url }}" class="text-[var(--link)] hover:underline">my other blog</a> if you want to go deep)</span>. Basically, ask it to break down the run loop, tools <span class="paren-note">(reflection)</span>, and the other important things for you.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  I will use the terms <strong>harness</strong> and <strong>agent</strong> interchangeably in this blog, so just understand that I am talking about the core logic running this system.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  This is all just what I can recall in my last 1.5 years of doing agentic engineering as you call it. It all started with langchain/camel-ai for me, and now has evolved into a full-blown area of engineering. This is my attempt to share all the alpha here.
+</p>
+
+<h2 id="its-all-a-while-loop" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">It's all a while loop</h2>
+
+<p class="mb-6 leading-relaxed">
+  Even when I write for others about their agentic infrastructure, I always try to sneak in how the whole agentic world is run by a <strong>while loop</strong>.
+</p>
+
+<figure>
+  <img src="{{ '/blogs/its-all-a-while-loop/while-loop-tower.png' | relative_url }}" alt="xkcd-style comic: a tall, wobbly tower of blocks labelled 'all of agentic engineering' rests on one thin block labelled 'a while loop()'. One stick figure asks 'Wait, it's all a while loop?' and another answers 'Always has been.'" class="w-full rounded-xl border border-[var(--border)] bg-white" />
+  <figcaption class="mb-6 text-sm text-[var(--text-muted)] leading-relaxed">
+    <em>Adapted from <a href="https://xkcd.com/2347/" class="text-[var(--link)] hover:underline">xkcd 2347</a>.</em>
+  </figcaption>
+</figure>
+
+<p class="mb-6 leading-relaxed">
+  You might think all the LLM harnesses and agents must be some complex reincarnation of a superintelligence, but in practice they all follow this logic:
+</p>
+
+<pre><code class="language-python">history = [user_message]
+while True:
+    reply = llm.call(history)
+    history += reply
+    if not reply.tool_calls: break
+    history += run_tools(reply.tool_calls)</code></pre>
+
+<p class="mb-6 leading-relaxed">
+  Every harness and every agentic loop, from the most complex codebase to the simplest SDK, is <strong>just a wrapper around an LLM hosted somewhere</strong>. For the most part, you don't need to know the details of the model or its weights. All you care about is that you need to <em>iterate this text stream on top of itself</em>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  All they do is call an LLM <a href="https://developers.openai.com/api/reference/resources/responses" class="text-[var(--link)] hover:underline">Responses API</a> <span class="paren-note">(read the OpenAI docs for this if you don't know what a Responses API is)</span>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <strong>It's just a format.</strong> You send a list of items <span class="paren-note">(your messages, the instructions, and the tools the model is allowed to call)</span>, and you get a list of items back <span class="paren-note">(a text reply, a tool call, maybe some reasoning)</span>. Whatever comes back gets added to the list you send next time, and that defines the whole contract:
+</p>
+
+<img src="{{ '/blogs/its-all-a-while-loop/openai-format.png' | relative_url }}" alt="xkcd-style diagram titled 'A list goes in. A list comes out.' On the left, what you send: instructions, your messages, tools it may call, and what came back last time. An arrow goes into a stick figure labelled 'the model', and another comes out to what comes back: a reply, a tool call, some reasoning. A loop carries those back onto the next list." class="w-full rounded-xl mb-6 border border-[var(--border)] bg-white" />
+
+<p class="mb-6 leading-relaxed">
+  Most of these providers follow the same API format. I would suggest you just stick to OpenAI for the most part, as they are the industry standard; they explain the internals of conversation state and <a href="https://developers.openai.com/api/docs/guides/function-calling" class="text-[var(--link)] hover:underline">function calling</a> in their docs <span class="paren-note">(Anthropic and Google do things a bit differently, but the core ideas behind these APIs remain the same)</span>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Every codebase will have something called a <code>run()</code> function that accumulates all the important pieces to run the modern harness <span class="paren-note">(messages, history, tool calls, outputs, errors, etc.)</span> and outputs the final response. All the loop cares about is <strong>how it wants to exit</strong>. It can be a finish reason, hitting a turn limit, or maybe just an error. All they do is run the same loop again and again, and <em>each new output becomes the tail of the input for the next message</em>.
+</p>
+
+<img src="{{ '/blogs/its-all-a-while-loop/message-stack.png' | relative_url }}" alt="xkcd-style diagram titled 'Every turn, the whole pile goes back in.' Turn 1 sends a system prompt and the user's message, turn 2 adds the model's read_file call and 400 lines of tool output, turn 3 adds two more, and by turn 40 an 80-message stack wobbles. Already-sent messages are shaded grey and sent again anyway, while a stick figure says 'It's still one array.'" class="w-full rounded-xl mb-6 border border-[var(--border)] bg-white" />
+
+<p class="mb-6 leading-relaxed">
+  <strong>The TL;DR of it all:</strong> you call an API, it turns into a message vector, the message vectors stack on top of each other to form history, and the loop keeps running until the model stops calling tools and ends with a message.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Understand this pattern and every harness will be demystified. That is why I love <a href="https://ai.pydantic.dev/agents/" class="text-[var(--link)] hover:underline">pydantic-ai</a> and <a href="https://github.com/earendil-works/pi" class="text-[var(--link)] hover:underline">pi</a>: both present this simple idea very evidently in their loops, which makes it very easy for me to trace how all the other helpers fit together.
+</p>
+
+<h2 id="its-also-just-a-tool-call" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">It's also just a tool call</h2>
+
+<p class="mb-6 leading-relaxed">
+  When you go one layer below, into the harness space <span class="paren-note">(or just the place where the while loop runs)</span>, what separates a good run from a bad run is a <strong>tool call</strong>. Tool calls are the <em>connective tissue</em>, an abstraction that allows agents to perform actions on your machine.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Tool calls are just functions <span class="paren-note">(yes, really)</span>, but they <strong>flip the conversation</strong>: instead of you manually putting the parameters in and expecting a result, the agent does it and gets a response back. That response gets fed back and affects the next action the agent takes.
+</p>
+
+<img src="{{ '/blogs/its-all-a-while-loop/tool-call-flow.png' | relative_url }}" alt="xkcd-style diagram titled 'The model asks. Your machine does it.' The model asks the harness on your machine to read the README, the harness opens it and hands the file back, the model then asks for main.py, gets it the same way, and finally answers 'Here's how your app works' with no tool call, so the loop ends." class="w-full rounded-xl mb-6 border border-[var(--border)] bg-white" />
+
+<p class="mb-6 leading-relaxed">
+  While this is basic, most agents need only four tools in their catalogue, as the pi harness suggests: <code>read</code>, <code>write</code>, <code>edit</code>, and <code>bash</code>. <span class="paren-note">(Maybe all this actually hints that we can get better outputs with fewer basic tools than by burying ourselves in detailed abstractions and a plethora of tool definitions.)</span>
+</p>
+
+<p class="mb-6 leading-relaxed">
+  But the reason I ask people to work on optimising their tools is that <strong>the more optimal the tool is</strong> <span class="paren-note">(it preserves context and needs minimal tokens from the agent to execute)</span>, <strong>the cheaper and more effective your agent will be</strong>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  One way to present this idea is to think about two tools:
+</p>
+
+<ul class="list-disc pl-6 mb-6 space-y-2">
+  <li>one asks for too many inputs and <strong>dumps all its data</strong> back into the agent loop;</li>
+  <li>one takes minimal input, does the processing on the agent's behalf, and <strong>returns a reference</strong> to the tool output back to the agent.</li>
+</ul>
+
+<img src="{{ '/blogs/its-all-a-while-loop/two-tools.png' | relative_url }}" alt="xkcd-style diagram titled 'Both tools find the crash. One also buries it.' Tool 1 makes the model fill in eight inputs and sends back all 4,000 matching log lines, burying the context window while a stick figure says 'I needed one line.' Tool 2 takes one input, reads and sums up the logs itself, and returns one short line pointing to crashes.txt, leaving room to think." class="w-full rounded-xl mb-6 border border-[var(--border)] bg-white" />
+
+<p class="mb-6 leading-relaxed">
+  The second round trip carries so little bloat that it's very light on the context.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Some ideas that make a better tool:
+</p>
+
+<ul class="list-disc pl-6 mb-6 space-y-2">
+  <li><strong>Less context bloat on each run</strong> <span class="paren-note">(optimise your tools not to load everything, but to reference the inputs well)</span>.</li>
+  <li>Outputs are <strong>referenced</strong> instead of dumped back into the context window.</li>
+  <li>Better file hashes and inline edits.</li>
+  <li>The tool itself can inherit context from other tools and agent artifacts <span class="paren-note">(meta tools)</span>.</li>
+  <li><strong>Simplicity</strong>, actually <span class="paren-note">(as pi proved)</span>.</li>
+</ul>
+
+<h2 id="the-subagent-dilemma" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">The subagent dilemma</h2>
+
+<p class="mb-6 leading-relaxed">
+  You might have heard about <a href="{{ '/blogs/anatomy-of-subagents/' | relative_url }}" class="text-[var(--link)] hover:underline">subagents</a>, a smaller fleet of agents that your main agent can spawn. <strong>That's also just a tool call.</strong>
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Subagents are just tools a main agent calls to provision agents that run in an <strong>isolated session</strong> with a timeout.
+</p>
+
+<pre><code class="language-python">start_subagent(task="Find every caller of refund() and list the files", model="gpt-5.4", timeout_s=300)
+# -> the same run() loop, with a fresh history; only the final answer comes back:
+# "3 callers: billing.py, api.py, jobs.py"</code></pre>
+
+<img src="{{ '/blogs/its-all-a-while-loop/subagent.png' | relative_url }}" alt="xkcd-style diagram titled '30 turns in the subagent. One line in your history.' The main loop hands a task to a subagent, which starts a fresh history and stacks 30 turns of searching and reading. Only its final answer, 'billing, api, jobs', comes back as a single line in the main loop's history." class="w-full rounded-xl mb-6 border border-[var(--border)] bg-white" />
+
+<p class="mb-6 leading-relaxed">
+  <em>One who masters tools can master the run loop in their harness.</em>
+</p>
+
+<h2 id="sadly-its-still-backend-engineering" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">Sadly, it's still backend engineering</h2>
+
+<p class="mb-6 leading-relaxed">
+  I feel a lot of basic frontend is solved for devs. You decide on a schema, build a React app around it, and from there the agents can create a usable place for you to run your apps through a visual medium. You don't need to understand a library that renders a visual medium <span class="paren-note">(graphs, charts, UI components)</span>. For most of my understanding and my work, I like to think of it as a black box that needs a certain JSON schema going in and generates the UI I want. If your focus is the core agentic part, <strong>focus on the schema rather than the spectacle</strong>; the rest is solvable by most models in their current state. It's surely not polished, or maybe even production-level, but it removes the barrier of waiting for a frontend developer to build a skeleton around your APIs to test with.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  The neat part is that the fancy decor of your agentic journey, be it MCP or A2A, is <em>not going to take you very far</em>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  All you actually need to focus on is <strong>the fundamentals of systems, specifically the backend</strong>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  You should not approach this the basic way of doing backend, but rather invert the approach, because agents stream their data very differently from a classic backend.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Your agent can't magically spit data to the frontend, so here are a few mental models to keep in mind when building the backend for agents:
+</p>
+
+<ul class="list-disc pl-6 mb-6 space-y-3">
+  <li><strong>Long-running sessions and streams:</strong> Classic databases and backend systems deal with one-off static data that finishes its lifecycle in a single step <span class="paren-note">(or a few deterministic ones)</span>, but with agents, a session can run for multiple minutes, stream data in batches, crash, and even recover when an error comes in. What you deal with and learn now are SSE streams, heartbeats for agent state, disconnects, reconnects, and more.</li>
+  <li><strong>Errors are a boon to the next turn, not a curse:</strong> If something fails in classic systems it shows something is brittle in the implementation, but in agents multiple things can coincide to produce an error: a misfired tool call, a bad implementation, permission access, and what not. Instead of only dumping them into logs, the errors you return back to the agent are <em>golden in their own right</em>, because they help the next step take a more focused approach.</li>
+  <li><strong>Cancellation, timeouts, and idempotency are the failure cases to account for:</strong> Users can interrupt a call, tools can stall, APIs hang, and in cases like these you need to make sure cancellation is wired down to the last HTTP call and subprocess. The system should know how to retry and when to wind down if nothing works.</li>
+  <li><strong>Protection from unbounded payloads:</strong> While data is a boon, all data is not. A SQL log can contain a lot of detailed information, but we need to be mindful of how that reaches the context. Instead of pumping it back into the LLM, our tool outputs need to truncate, spill large outputs to disk, and reference them back so nothing chokes the context window.</li>
+  <li><strong>Data is a loose cannon:</strong> Your payloads are no longer one fixed datatype. A stream carries mixed event types <span class="paren-note">(text deltas, thinking, tool calls, tool results, errors)</span> where the contract is a small envelope around flexible content, so make sure to account for those.</li>
+</ul>
+
+<p class="mb-6 leading-relaxed">
+  I like to visualise all my data in a schema/struct first and then approach things from the POV of <em>a cannon shooting deltas of streams</em>.
+</p>
+
+<img src="{{ '/blogs/its-all-a-while-loop/stream-cannon.png' | relative_url }}" alt="xkcd-style comic titled 'Draw the shape first. Then fire.' A sheet of paper reads 'Every shot has: what kind it is, which run it came from, what is inside.' Below it a stick figure says 'I know the shape of every shot' beside a cannon labelled 'your backend', which fires grey boxes labelled text, thinking, tool call, tool result and error in an arc to a stick figure labelled 'your frontend'. A note says grey is the same small envelope and anything can be inside." class="w-full rounded-xl mb-6 border border-[var(--border)] bg-white" />
+
+<h2 id="old-is-where-the-gold-is" class="text-2xl font-bold mt-12 mb-6 text-[var(--primary)]">How to learn: old is where the gold is</h2>
+
+<p class="mb-6 leading-relaxed">
+  I see people asking for resources to learn AI agents, and people talking to their LLMs about it. As I discussed in the backend section above, whatever I told you is not special knowledge. Heck, it's not knowledge that appeared 3 years ago at the inception of ChatGPT, but rather <strong>fundamentals of systems and CS</strong> that have been built over the last 20 years or so.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  Where is the alpha then? What is the real resource to learn it all, actually?
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <strong>Specs</strong> <span class="paren-note">(yes, really, that's the real gold)</span>.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  While writing <a href="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/' | relative_url }}" class="text-[var(--link)] hover:underline">my blog on streaming</a>, I did not go to how OpenAI does its streaming <span class="paren-note">(even though I did use it for reference)</span>, but rather to the SSE <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html" class="text-[var(--link)] hover:underline">specs</a> that were written properly 20 years or so ago.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  During my time at ACI, my CTO told me to <strong>focus on nothing more than the specs</strong>. That advice holds today and always will: learning the general system behind a problem, instead of just one framework built on top of it, is where the learning alpha lies.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  All these protocols we see every other day promising to revolutionise how we talk to agents, tools, and what not, be it MCP, A2A, or ACP, are built on <a href="https://www.jsonrpc.org/specification" class="text-[var(--link)] hover:underline">JSON-RPC 2.0</a> under the hood. They all follow the same underlying architecture with a few tweaks here and there. Do I need to learn all these protocols? <strong>No.</strong> Just learn how JSON-RPC works from the spec, and let specs be the ultimate source of what to learn. Everything in specs written 20 years ago gets packed and repurposed again and again <span class="paren-note">(every six months)</span>. It's on us to learn the fundamentals first rather than trying to absorb the new buzz every time.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  The same way, the real alpha for the internals of sandboxing does not lie in modern abstractions like E2B or Daytona. It lives in the older OS and networking primitives underneath them: <strong>Linux namespaces, cgroups, microVMs</strong>, and how processes and networks get isolated.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  <strong>Get your fundamentals right</strong>; this has never been more true.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  So I guess this is how the blog ends. Underneath all the new frameworks, protocols, and weekly releases, <strong>it is still a while loop calling tools on top of solid backend fundamentals and specs written by some grumpy old guy</strong>. Learn those once, and every new <em>"breakthrough"</em> in your feed starts converging to similar pointers.
+</p>
+
+<p class="mb-6 leading-relaxed">
+  I will probably start writing more around this topic: sandboxes, how Replit and similar apps are built, and a lot more. Follow me to stay tuned!
+</p>
+
+<h3 class="text-xl font-bold mt-10 mb-4 text-[var(--primary)]">Connect with me</h3>
+
+<p class="mb-6 leading-relaxed">
+  <a href="https://twitter.com/parthshr370" class="text-[var(--link)] hover:underline">Twitter</a> /
+  <a href="https://github.com/parthshr370" class="text-[var(--link)] hover:underline">GitHub</a> /
+  <a href="https://linkedin.com/in/parthshr370" class="text-[var(--link)] hover:underline">LinkedIn</a> /
+  <a href="mailto:parthshar370@gmail.com" class="text-[var(--link)] hover:underline">Email</a>
+</p>
+
+<hr class="border-[var(--border)] my-8" />
+
+<h3 class="text-xl font-bold mb-4 text-[var(--primary)]">Further reading</h3>
+
+<ul class="list-disc pl-6 mb-6 space-y-3 text-sm leading-relaxed">
+  <li><strong><a href="https://developers.openai.com/api/reference/resources/responses" class="text-[var(--link)] hover:underline">OpenAI Responses API</a></strong> - the list-in, list-out format every loop above is built on</li>
+  <li><strong><a href="https://developers.openai.com/api/docs/guides/function-calling" class="text-[var(--link)] hover:underline">OpenAI function calling guide</a></strong> - how tool calls and their outputs travel through that format</li>
+  <li><strong><a href="https://ai.pydantic.dev/agents/" class="text-[var(--link)] hover:underline">pydantic-ai agents</a></strong> and <strong><a href="https://github.com/earendil-works/pi" class="text-[var(--link)] hover:underline">pi</a></strong> - two codebases where the run loop is easy to read</li>
+  <li><strong><a href="{{ '/blogs/how-i-built-tool-calling-engine-for-my-agent-sdk/' | relative_url }}" class="text-[var(--link)] hover:underline">How I built a tool calling engine for my Go agent SDK</a></strong> - tool registration, schemas, and execution from scratch</li>
+  <li><strong><a href="{{ '/blogs/anatomy-of-subagents/' | relative_url }}" class="text-[var(--link)] hover:underline">Anatomy of Subagents</a></strong> - nested runs, isolation, and delegation</li>
+  <li><strong><a href="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/' | relative_url }}" class="text-[var(--link)] hover:underline">Let's learn LLM streaming from first principles</a></strong> - SSE and streaming inside an agent loop</li>
+  <li><strong><a href="https://html.spec.whatwg.org/multipage/server-sent-events.html" class="text-[var(--link)] hover:underline">WHATWG Server-Sent Events spec</a></strong> and <strong><a href="https://www.jsonrpc.org/specification" class="text-[var(--link)] hover:underline">JSON-RPC 2.0 spec</a></strong> - the old specs the new stuff is built on</li>
+</ul>
+
+<p class="mb-6 text-sm text-[var(--text-muted)]">
+  <em>Diagrams lettered in <a href="https://github.com/ipython/xkcd-font" class="text-[var(--link)] hover:underline">xkcd-script</a> (CC BY-NC 3.0). Banner: Diego Velázquez, <a href="https://commons.wikimedia.org/wiki/File:Velazquez-las_hilanderas.jpg" class="text-[var(--link)] hover:underline">Las Hilanderas</a> (c. 1657), Museo del Prado.</em>
+</p>

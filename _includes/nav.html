@@ -1,11 +1,11 @@
-<nav class="site-nav mt-20 pb-4 border-b border-[var(--border)] flex justify-between items-end" aria-label="Primary">
+<nav class="site-nav mt-10 sm:mt-12 pb-4 border-b border-[var(--border)] flex justify-between items-end gap-4" aria-label="Primary">
   <div>
     {% if page.nav_active == 'home' %}
-    <h1 class="font-serif text-4xl font-bold text-[var(--primary)]">{{ site.title }}</h1>
+    <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[var(--primary)]">{{ site.title }}</h1>
     {% else %}
     <p class="text-xl font-bold text-[var(--text)]">{{ site.title }}</p>
     {% endif %}
-    <div class="mt-5 flex flex-wrap gap-5">
+    <div class="mt-5 flex flex-wrap gap-x-5 gap-y-1">
       <a href="{{ '/' | relative_url }}"{% if page.nav_active == 'home' %} aria-current="page"{% endif %}>Home</a>
       <a href="{{ '/blogs/' | relative_url }}"{% if page.nav_active == 'blogs' %} aria-current="page"{% endif %}>Blogs</a>
       <a href="{{ '/projects/' | relative_url }}"{% if page.nav_active == 'projects' %} aria-current="page"{% endif %}>Projects</a>

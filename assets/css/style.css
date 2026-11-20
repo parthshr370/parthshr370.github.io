@@ -676,11 +676,14 @@ h3[id] {
 
 .projects-list {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.75rem;
 }
 
 .project-card {
     --project-accent: var(--primary);
+    min-width: 0;
+    overflow-wrap: anywhere;
     padding: 1rem 1.1rem;
     border: 1px solid var(--border);
     border-radius: 0.6rem;

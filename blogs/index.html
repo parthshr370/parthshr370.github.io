@@ -9,7 +9,7 @@ permalink: /blogs/
 <section class="blogs-page mt-8" aria-labelledby="blogs-heading">
   <div class="blogs-page__intro">
     <h1 id="blogs-heading" class="text-2xl font-bold text-[var(--primary)]">Writing</h1>
-    <p class="text-[var(--text-muted)] mt-2">Notes on agents, systems, infrastructure, and the code behind them.</p>
+    <p class="text-[var(--text-muted)] mt-2">Notes on agents, systems, infrastructure, and the code behind them. I also take on technical writing for teams building in this space; <a href="mailto:parthshar370@gmail.com" class="external-link">get in touch</a>.</p>
   </div>
 
   <!-- Featured Posts -->
@@ -19,12 +19,27 @@ permalink: /blogs/
   </div>
   <div class="blogs-featured space-y-4 mb-12">
 
-    <!-- Let's learn LLM streaming from first principles -->
+    <!-- What 1.5 years of building agents taught me -->
     <div class="post-card post-card--featured p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)]">
       <div class="group">
-        <a href="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/' | relative_url }}" class="block">
+        <a href="{{ '/blogs/its-all-a-while-loop/' | relative_url }}" class="block">
           <span class="text-xs font-bold uppercase tracking-widest text-[var(--primary)] opacity-80">Latest Post</span>
-          <p class="text-xs font-semibold uppercase tracking-widest text-[var(--cyan)] opacity-80 mt-2">Go Agent SDK - Part 3</p>
+          <h3 class="text-2xl font-bold text-[var(--text)] group-hover:text-[var(--link)] mt-2 transition-colors leading-snug">What 1.5 years of building agents taught me: loops, tools, and specs</h3>
+          <p class="text-[var(--text-muted)] mt-2 leading-[1.65]">Every agent harness is a while loop, a few tools, and plain backend engineering, and the old specs are where the real learning is.</p>
+          <div class="flex items-center gap-4 mt-2 text-sm text-[var(--text-muted)]">
+            <span>November 20, 2026</span>
+            <span class="w-1 h-1 rounded-full bg-[var(--cyan)]"></span>
+            <span>9 min read</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Let's learn LLM streaming from first principles -->
+    <div class="post-card post-card--primary p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)]">
+      <div class="group">
+        <a href="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/' | relative_url }}" class="block">
+          <p class="text-xs font-semibold uppercase tracking-widest text-[var(--cyan)] opacity-80">Go Agent SDK - Part 3</p>
           <h3 class="text-2xl font-bold text-[var(--text)] group-hover:text-[var(--link)] mt-1 transition-colors leading-snug">Let's learn LLM streaming from first principles</h3>
           <p class="text-[var(--text-muted)] mt-2 leading-[1.65]">Understanding LLM streaming from first principles by building it into a Go Agent SDK. Part three covers SSE, stream events, provider parsers, accumulation, tool calls, and RunStream.</p>
           <div class="flex items-center gap-4 mt-2 text-sm text-[var(--text-muted)]">
@@ -37,7 +52,7 @@ permalink: /blogs/
     </div>
 
     <!-- How I built a tool calling engine for my Go agent SDK -->
-    <div class="post-card post-card--primary p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)]">
+    <div class="post-card post-card--secondary p-4 rounded-xl border border-[var(--border)]">
       <div class="group">
         <a href="{{ '/blogs/how-i-built-tool-calling-engine-for-my-agent-sdk/' | relative_url }}" class="block">
           <p class="text-xs font-semibold uppercase tracking-widest text-[var(--cyan)] opacity-80">Go Agent SDK - Part 2</p>
@@ -53,7 +68,7 @@ permalink: /blogs/
     </div>
 
     <!-- How I built my own Langchain from scratch in Go -->
-    <div class="post-card post-card--secondary p-4 rounded-xl border border-[var(--border)]">
+    <div class="post-card post-card--cyan p-4 rounded-xl border border-[var(--border)]">
       <div class="group">
         <a href="{{ '/blogs/how-i-built-my-own-langchain-from-scratch-in-go/' | relative_url }}" class="block">
           <p class="text-xs font-semibold uppercase tracking-widest text-[var(--cyan)] opacity-80">Go Agent SDK - Part 1</p>
@@ -69,7 +84,7 @@ permalink: /blogs/
     </div>
 
     <!-- Anatomy of Subagents -->
-    <div class="post-card post-card--cyan p-4 rounded-xl border border-[var(--border)]">
+    <div class="post-card post-card--gold p-4 rounded-xl border border-[var(--border)]">
       <div class="group">
         <a href="{{ '/blogs/anatomy-of-subagents/' | relative_url }}" class="block">
           <h3 class="text-2xl font-bold text-[var(--text)] group-hover:text-[var(--link)] transition-colors leading-snug">Anatomy of Subagents</h3>
@@ -78,21 +93,6 @@ permalink: /blogs/
             <span>March 1, 2026</span>
             <span class="w-1 h-1 rounded-full bg-[var(--cyan)]"></span>
             <span>7 min read</span>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- JSON, Marshals and Go -->
-    <div class="post-card post-card--gold p-4 rounded-xl border border-[var(--border)]">
-      <div class="group">
-        <a href="{{ '/blogs/json-marshals-and-go/' | relative_url }}" class="block">
-          <h3 class="text-2xl font-bold text-[var(--text)] group-hover:text-[var(--link)] transition-colors leading-snug">JSON, Marshals and Go</h3>
-          <p class="text-[var(--text-muted)] mt-2 leading-[1.65]">A deep dive into how Go handles JSON data structures using Marshalling and Structs.</p>
-          <div class="flex items-center gap-4 mt-2 text-sm text-[var(--text-muted)]">
-            <span>January 21, 2026</span>
-            <span class="w-1 h-1 rounded-full bg-[var(--cyan)]"></span>
-            <span>5 min read</span>
           </div>
         </a>
       </div>
@@ -109,6 +109,14 @@ permalink: /blogs/
       </summary>
     
       <div class="blog-archive__list">
+        <!-- What 1.5 years of building agents taught me (Local) -->
+        <div class="group">
+            <a href="{{ '/blogs/its-all-a-while-loop/' | relative_url }}" class="block">
+                <h3 class="text-lg font-semibold text-[var(--text)] group-hover:text-[var(--link)] transition-colors">What 1.5 years of building agents taught me: loops, tools, and specs</h3>
+                <p class="text-sm text-[var(--text-muted)] mt-1">Agents • Harnesses • Backend • Specs</p>
+            </a>
+        </div>
+
         <!-- Let's learn LLM streaming from first principles (Local) -->
         <div class="group">
             <a href="{{ '/blogs/let-me-teach-you-llm-streaming-from-first-principles/' | relative_url }}" class="block">

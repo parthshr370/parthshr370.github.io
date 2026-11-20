@@ -43,6 +43,7 @@ This is a static site with no automated tests. Verify changes by:
 ├── index.html             # Homepage with intro, projects, socials
 ├── blogs/
 │   ├── index.html         # Blog listing page (featured + all posts + notes section)
+│   ├── its-all-a-while-loop/index.html                    # Latest post (xkcd-style figures)
 │   ├── how-i-built-tool-calling-engine-for-my-agent-sdk/  # Agent SDK Blog 2
 │   ├── how-i-built-my-own-langchain-from-scratch-in-go/   # Agent SDK Blog 1
 │   ├── anatomy-of-subagents/index.html
